@@ -78,33 +78,31 @@ fun BodyContent(
             .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(25.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column {
-                Row{
-                    Image(
-                        imageVector = Icons.Filled.List,
-                        contentDescription = "Menu",
-                        modifier = Modifier
-                            .clickable { onMenuToggle() }
-                    )
-                    Text(text = textsGames2[currentIndex])
-                }
-
-                Column(
+            Row{
+                Image(
+                    imageVector = Icons.Filled.List,
+                    contentDescription = "Menu",
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray, shape = RoundedCornerShape(15.dp))
-                        .clip(RoundedCornerShape(15.dp)),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    screensGames2[currentIndex]()
-                }
+                        .clickable { onMenuToggle() }
+                )
+                Text(text = textsGames2[currentIndex])
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray, shape = RoundedCornerShape(15.dp))
+                    .clip(RoundedCornerShape(15.dp)),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                screensGames2[currentIndex]()
             }
         }
     }
