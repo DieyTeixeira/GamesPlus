@@ -4,22 +4,36 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.CompareArrows
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Gamepad
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Sell
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,22 +41,30 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
-import com.dieyteixeira.gamesplus.ui.theme.Green500
+import com.dieyteixeira.gamesplus.ui.theme.Blue
+import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
+import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
+import com.dieyteixeira.gamesplus.ui.theme.Orange
 
 @Composable
 fun AppScreen() {
-    Surface(color = Green500) {
+    val colorList = Blue
+    val colorIntern = DarkBlue
+
+    Surface(color = colorList) {
         var currentIndex by remember { mutableStateOf(0) }
         var navigateClick by remember { mutableStateOf(false) }
 
         Box(modifier = Modifier.fillMaxSize()) {
             NavigationDrawer(
-                color = Green500,
+                color = colorList,
                 onItemClicked = { index ->
                     currentIndex = index
                     navigateClick = false
@@ -50,6 +72,7 @@ fun AppScreen() {
             )
             BodyContent(
                 currentIndex = currentIndex,
+                colorIntern = colorIntern,
                 navigateClick = navigateClick,
                 onMenuToggle = { navigateClick = !navigateClick }
             )
@@ -61,11 +84,12 @@ fun AppScreen() {
 @Composable
 fun BodyContent(
     currentIndex: Int,
+    colorIntern: Color,
     navigateClick: Boolean = false,
     onMenuToggle: () -> Unit
 ) {
 
-    val offSetAnim by animateDpAsState(targetValue = if (navigateClick) 253.dp else 0.dp)
+    val offSetAnim by animateDpAsState(targetValue = if (navigateClick) 300.dp else 0.dp)
     val scaleAnim by animateFloatAsState(targetValue = if (navigateClick) 0.6f else 1.0f)
     val clipAnim by animateDpAsState(targetValue = if (navigateClick) 25.dp else 0.dp)
 
@@ -84,39 +108,66 @@ fun BodyContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row{
-                Image(
-                    imageVector = Icons.Filled.List,
-                    contentDescription = "Menu",
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(colorIntern)
+                    .padding(15.dp, 0.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
                     modifier = Modifier
-                        .clickable { onMenuToggle() }
-                )
-                Text(text = textsGames2[currentIndex])
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_double_arrow_left),
+                        contentDescription = "Lista",
+                        modifier = Modifier
+                            .size(23.dp)
+                            .clickable { onMenuToggle() }
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        textsGames[currentIndex],
+                        style = MaterialTheme.typography.headlineLarge.copy(fontSize = 30.sp),
+                        color = Color.White
+                    )
+                }
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.LightGray, shape = RoundedCornerShape(15.dp))
-                    .clip(RoundedCornerShape(15.dp)),
+                    .background(Color.White, shape = RoundedCornerShape(15.dp)),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                screensGames2[currentIndex]()
+                screensGames[currentIndex]()
             }
         }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val screensGames2 = listOf<@Composable () -> Unit>(
+val screensGames = listOf<@Composable () -> Unit>(
     { MenuGames() },
-    { GameMemory(color = getRandomColorGames()) }
+    { GameMemory() }
 )
 
-val textsGames2 = listOf(
-    "Menu Games",
-    "Game Memory"
+val textsGames = listOf(
+    "Games Plus",
+    "Jogo da Memória"
 )
 
 @Composable
@@ -130,8 +181,8 @@ fun NavigationDrawer(
             .background(color)
     ) {
         NavigationItem(
-            icon = Icons.Filled.List,
-            text = "Menu",
+            icon = Icons.AutoMirrored.Filled.List,
+            text = "Lista",
             index = 0,
             topPadding = 100.dp
         ) { onItemClicked(it) }
@@ -156,12 +207,18 @@ fun NavigationItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 25.dp, top = topPadding, bottom = bottomPadding)
-            .clickable { onItemClicked(index) }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onItemClicked(index) }
     ) {
         Row(
             modifier = Modifier
-                .size(175.dp, 35.dp)
-                .background(Color.White.copy(alpha = 0.2f), CutCornerShape(35.dp, 0.dp, 35.dp, 0.dp))
+                .size(200.dp, 35.dp)
+                .background(
+                    Color.White.copy(alpha = 0.2f),
+                    CutCornerShape(35.dp, 0.dp, 35.dp, 0.dp)
+                )
         ) {
             Row(
                 modifier = Modifier
@@ -197,4 +254,10 @@ fun MenuGames() {
             text = "Selecione seu jogo!"
         )
     }
+}
+
+@Preview
+@Composable
+private fun PreviewApp() {
+    AppScreen()
 }

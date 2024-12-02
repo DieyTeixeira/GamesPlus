@@ -23,9 +23,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import com.dieyteixeira.gamesplus.ui.theme.BlueSky
-import com.dieyteixeira.gamesplus.ui.theme.Green500
-import com.dieyteixeira.gamesplus.ui.theme.Red
 import kotlinx.coroutines.delay
 
 enum class FlipCard(val angle: Float) {
@@ -43,6 +40,8 @@ enum class FlipCard(val angle: Float) {
 @Composable
 fun FlipRotate(
     flipCard: FlipCard,
+    player1Color: Color,
+    player2Color: Color,
     onClick: () -> Unit,
     isMatched: Boolean,
     matchPlayer: Int,
@@ -105,7 +104,11 @@ fun FlipRotate(
                     previous()
 
                     if (showExplosion) {
-                        SparksEffect(modifier, matchPlayer)
+                        SparksEffect(
+                            modifier,
+                            player1Color,
+                            player2Color,
+                            matchPlayer)
                     }
                 }
             }
@@ -114,11 +117,16 @@ fun FlipRotate(
 }
 
 @Composable
-fun SparksEffect(modifier: Modifier, matchPlayer: Int) {
+fun SparksEffect(
+    modifier: Modifier,
+    player1Color: Color,
+    player2Color: Color,
+    matchPlayer: Int
+) {
     val explosionColor = when (matchPlayer) {
-        1 -> BlueSky
-        2 -> Red
-        3 -> Green500
+        1 -> player1Color
+        2 -> player2Color
+        3 -> player1Color
         else -> Color.LightGray
     }
 

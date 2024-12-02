@@ -16,12 +16,12 @@ fun countPairsByPlayer(matchedPairs: MutableMap<Int, Int>, playerId: Int): Int {
 @Composable
 fun calculateCardSize(rows: Int, columns: Int): Dp {
     val screenWidth = 320.dp
-    val screenHeight = 405.dp
+    val screenHeight = 600.dp
 
     val availableWidth = screenWidth / columns
     val availableHeight = screenHeight / rows
 
-    return min(availableWidth, availableHeight) * 0.85f
+    return min(availableWidth, availableHeight)
 }
 
 fun generateGrid(size: GridSize): List<Int> {

@@ -2,7 +2,9 @@ package com.dieyteixeira.gamesplus.games.game_memory
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,25 +32,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dieyteixeira.gamesplus.ui.theme.BlueSky
-import com.dieyteixeira.gamesplus.ui.theme.Green500
-import com.dieyteixeira.gamesplus.ui.theme.Green800
+import com.dieyteixeira.gamesplus.R
+import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
 import com.dieyteixeira.gamesplus.ui.theme.Red
-import com.dieyteixeira.gamesplus.ui.theme.Yellow
 import kotlinx.coroutines.delay
 
 @Composable
-fun GameMemory(color: Color) {
+fun GameMemory() {
+    val color = DarkBlue
+
     var gridSize by remember { mutableStateOf(GridSize(4, 3)) }
     var gameMode by remember { mutableStateOf(GameMode.OnePlayer) }
     var player1Name by remember { mutableStateOf("") }
     var player2Name by remember { mutableStateOf("") }
+    var Color_Player_1 by remember { mutableStateOf(Color.LightGray) }
+    var Color_Player_2 by remember { mutableStateOf(Color.LightGray) }
     var showSettings by remember { mutableStateOf(true) }
 
     val onStartGame: (GameConfig) -> Unit = { config ->
@@ -60,19 +65,6 @@ fun GameMemory(color: Color) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color)
-                .padding(15.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                "JoGo DA MEMóRIA",
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 30.sp),
-                color = if (color == Yellow) Color.Black else Color.White
-            )
-        }
 
         Column(
             modifier = Modifier
@@ -90,8 +82,12 @@ fun GameMemory(color: Color) {
                     onGameModeSelected = { selectedMode -> gameMode = selectedMode },
                     player1Name = player1Name,
                     player2Name = player2Name,
+                    player1Color = Color_Player_1,
+                    player2Color = Color_Player_2,
                     onPlayer1NameChange = { player1Name = it },
                     onPlayer2NameChange = { player2Name = it },
+                    onPlayer1ColorChange = { Color_Player_1 = it },
+                    onPlayer2ColorChange = { Color_Player_2 = it },
                     onStartGame = onStartGame
                 )
             } else {
@@ -100,6 +96,8 @@ fun GameMemory(color: Color) {
                     isTwoPlayers = gameMode == GameMode.TwoPlayers,
                     player1Name = player1Name,
                     player2Name = player2Name,
+                    player1Color = Color_Player_1,
+                    player2Color = Color_Player_2,
                     onNewGame = { showSettings = true }
                 )
             }
@@ -113,6 +111,8 @@ fun MemoryGame(
     isTwoPlayers: Boolean,
     player1Name: String,
     player2Name: String,
+    player1Color: Color,
+    player2Color: Color,
     onNewGame: () -> Unit
 ) {
     val context = LocalContext.current
@@ -120,6 +120,8 @@ fun MemoryGame(
     var showEndOneGameDialog by remember { mutableStateOf(false) }
     var showEndTwoGameDialog by remember { mutableStateOf(false) }
     var showClearRecordDialog by remember { mutableStateOf(false) }
+    var showRestartGameDialog by remember { mutableStateOf(false) }
+    var showReturnSettingsDialog by remember { mutableStateOf(false) }
 
     var winnerName by remember { mutableStateOf("") }
     var winnerScore by remember { mutableStateOf(0) }
@@ -167,13 +169,15 @@ fun MemoryGame(
                 Log.d("GameState", "Nível atual: $gridSizeAtual")
 
                 val nextGridSize = when (gridSizeAtual) {
-                    GridSize(4, 3) -> GridSize(4, 4)
-                    GridSize(4, 4) -> GridSize(5, 4)
-                    GridSize(5, 4) -> GridSize(6, 4)
-                    GridSize(6, 4) -> GridSize(6, 5)
-                    GridSize(6, 5) -> GridSize(6, 6)
-                    GridSize(6, 6) -> GridSize(7, 6)
-                    GridSize(7, 6) -> GridSize(8, 6)
+                    GridSize(4, 3) -> GridSize(4, 4) // 1 -> 2
+                    GridSize(4, 4) -> GridSize(5, 4) // 2 -> 3
+                    GridSize(5, 4) -> GridSize(6, 4) // 3 -> 4
+                    GridSize(6, 4) -> GridSize(5, 5) // 4 -> 5
+                    GridSize(5, 5) -> GridSize(6, 5) // 5 -> 6
+                    GridSize(6, 5) -> GridSize(6, 6) // 6 -> 7
+                    GridSize(6, 6) -> GridSize(7, 6) // 7 -> 8
+                    GridSize(7, 6) -> GridSize(8, 6) // 8 -> 9
+                    GridSize(8, 6) -> GridSize(9, 6) // 9 -> 10
                     else -> gridSizeAtual
                 }
 
@@ -182,10 +186,12 @@ fun MemoryGame(
                     GridSize(4, 4) -> 2
                     GridSize(5, 4) -> 3
                     GridSize(6, 4) -> 4
-                    GridSize(6, 5) -> 5
-                    GridSize(6, 6) -> 6
-                    GridSize(7, 6) -> 7
-                    else -> 8
+                    GridSize(5, 5) -> 5
+                    GridSize(6, 5) -> 6
+                    GridSize(6, 6) -> 7
+                    GridSize(7, 6) -> 8
+                    GridSize(8, 6) -> 9
+                    else -> 10
                 }
 
                 Log.d("GameState", "Atualizando para o próximo gridSize: $nextGridSize")
@@ -262,6 +268,39 @@ fun MemoryGame(
         )
     }
 
+    if (showReturnSettingsDialog) {
+        ShowReturnSettingsDialog(
+            onNo = { showReturnSettingsDialog = false },
+            onYes = {
+                showReturnSettingsDialog = false
+                onNewGame()
+            }
+        )
+    }
+
+    if (showRestartGameDialog) {
+        ShowRestartGameDialog(
+            onNo = { showRestartGameDialog = false },
+            onYes = {
+                showRestartGameDialog = false
+                gameState = gameState.copy(
+                    grid = generateGrid(config.gridSize),
+                    revealed = MutableList(config.gridSize.rows * config.gridSize.columns) { false },
+                    matched = MutableList(config.gridSize.rows * config.gridSize.columns) { false },
+                    firstChoice = null,
+                    secondChoice = null,
+                    movesPlayer = 0,
+                    currentPlayer = 1,
+                    player1Name = player1Name,
+                    player2Name = player2Name,
+                    rows = config.gridSize.rows,
+                    columns = config.gridSize.columns,
+                    matchedPairs = mutableMapOf()
+                )
+            }
+        )
+    }
+
     LaunchedEffect(gameState.firstChoice, gameState.secondChoice) {
 
         if (gameState.firstChoice != null && gameState.secondChoice != null) {
@@ -322,10 +361,10 @@ fun MemoryGame(
                 if (player1Score > player2Score) {
                     winnerName = gameState.player1Name
                     winnerScore = player1Score
-                    winnerColor = BlueSky
+                    winnerColor = player1Color
                     loserName = gameState.player2Name
                     loserScore = player2Score
-                    loserColor = Red
+                    loserColor = player2Color
 
                     saveTwoPlayersVictory(
                         context,
@@ -336,10 +375,10 @@ fun MemoryGame(
                 } else if (player2Score > player1Score) {
                     winnerName = gameState.player2Name
                     winnerScore = player2Score
-                    winnerColor = Red
+                    winnerColor = player2Color
                     loserName = gameState.player1Name
                     loserScore = player1Score
-                    loserColor = BlueSky
+                    loserColor = player1Color
 
                     saveTwoPlayersVictory(
                         context,
@@ -380,6 +419,31 @@ fun MemoryGame(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_arrow_left),
+                contentDescription = "Voltar",
+                colorFilter = ColorFilter.tint(Color.Gray),
+                modifier = Modifier
+                    .size(23.dp)
+                    .clickable { showReturnSettingsDialog = true }
+            )
+            if (isTwoPlayers) {
+                Spacer(modifier = Modifier.width(25.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.ic_p_layout_2x2),
+                    contentDescription = "Reiniciar",
+                    colorFilter = ColorFilter.tint(Color.Gray),
+                    modifier = Modifier
+                        .size(23.dp)
+                        .clickable { showRestartGameDialog = true }
+                )
+            }
+        }
         if (isTwoPlayers) {
             Column (
                 modifier = Modifier.fillMaxSize(),
@@ -402,7 +466,7 @@ fun MemoryGame(
                             .width(75.dp)
                             .height(30.dp)
                             .background(
-                                color = BlueSky,
+                                color = player1Color,
                                 shape = CutCornerShape(0, 50, 50, 0)
                             )
                             .padding(horizontal = 10.dp),
@@ -420,7 +484,7 @@ fun MemoryGame(
                             .width(75.dp)
                             .height(30.dp)
                             .background(
-                                color = Red,
+                                color = player2Color,
                                 shape = CutCornerShape(50, 0, 0, 50)
                             )
                             .padding(horizontal = 10.dp),
@@ -444,7 +508,7 @@ fun MemoryGame(
                             .width(150.dp)
                             .height(40.dp)
                             .background(
-                                color = if (gameState.currentPlayer == 1) BlueSky else Color.LightGray.copy(
+                                color = if (gameState.currentPlayer == 1) player1Color else Color.LightGray.copy(
                                     alpha = 0.5f
                                 ),
                                 shape = RoundedCornerShape(10.dp)
@@ -459,7 +523,7 @@ fun MemoryGame(
                             Text(
                                 text = player1Name,
                                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
-                                color = if (gameState.currentPlayer == 1) Color.White else BlueSky
+                                color = if (gameState.currentPlayer == 1) Color.White else player1Color
                             )
                         }
                         Box(
@@ -476,7 +540,7 @@ fun MemoryGame(
                             Text(
                                 text = "${countPairsByPlayer(gameState.matchedPairs, 1)}",
                                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
-                                color = BlueSky
+                                color = player1Color
                             )
                         }
                     }
@@ -486,7 +550,7 @@ fun MemoryGame(
                             .width(150.dp)
                             .height(40.dp)
                             .background(
-                                color = if (gameState.currentPlayer == 2) Red else Color.LightGray.copy(
+                                color = if (gameState.currentPlayer == 2) player2Color else Color.LightGray.copy(
                                     alpha = 0.5f
                                 ),
                                 shape = RoundedCornerShape(10.dp)
@@ -508,7 +572,7 @@ fun MemoryGame(
                             Text(
                                 text = "${countPairsByPlayer(gameState.matchedPairs, 2)}",
                                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
-                                color = Red
+                                color = player2Color
                             )
                         }
                         Box(
@@ -562,7 +626,7 @@ fun MemoryGame(
                         .weight(1f)
                         .height(60.dp)
                         .background(
-                            color = Green800,
+                            color = player1Color,
                             shape = RoundedCornerShape(10.dp)
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -591,7 +655,7 @@ fun MemoryGame(
                                 color = Color.White
                             )
                             Text(
-                                text = "/8",
+                                text = "/10",
                                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 15.sp),
                                 color = Color.White,
                                 modifier = Modifier.padding(bottom = 2.dp)
@@ -605,7 +669,7 @@ fun MemoryGame(
                         .weight(1f)
                         .height(60.dp)
                         .background(
-                            color = Green800,
+                            color = player1Color,
                             shape = RoundedCornerShape(10.dp)
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -632,10 +696,10 @@ fun MemoryGame(
                         .weight(2f)
                         .height(60.dp)
                         .background(
-                            color = Green500,
+                            color = player1Color.copy(alpha = 0.7f),
                             shape = RoundedCornerShape(10.dp)
                         )
-                        .clickable{ showClearRecordDialog = true },
+                        .clickable { showClearRecordDialog = true },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -713,7 +777,7 @@ fun MemoryGame(
 
         val cardSize = calculateCardSize(gameState.rows, gameState.columns)
 
-        if (showEndOneGameDialog || showEndTwoGameDialog) {
+        if (showEndOneGameDialog || showEndTwoGameDialog || showRestartGameDialog) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -728,7 +792,8 @@ fun MemoryGame(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                GridBoard(gameState, cardSize) { index ->
+                Spacer(modifier = Modifier.height(20.dp))
+                GridBoard(gameState, cardSize, player1Color, player2Color) { index ->
                     if (!gameState.revealed[index] && !gameState.matched[index] && !isWaitingForFlip) {
                         val newRevealed = gameState.revealed.toMutableList()
                         newRevealed[index] = true
@@ -750,6 +815,8 @@ fun MemoryGame(
 fun GridBoard(
     gameState: MemoryGameState,
     cardSize: Dp,
+    player1Color: Color,
+    player2Color: Color,
     onItemClick: (Int) -> Unit
 ) {
 
@@ -758,7 +825,10 @@ fun GridBoard(
     }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         for (row in 0 until gameState.rows) {
             Row(
@@ -777,6 +847,8 @@ fun GridBoard(
 
                     FlipRotate(
                         flipCard = if (gameState.revealed[index] || gameState.matched[index]) FlipCard.Previous else FlipCard.Forward,
+                        player1Color = player1Color,
+                        player2Color = player2Color,
                         onClick = { onItemClick(index) },
                         isMatched = gameState.matched[index],
                         matchPlayer = gameState.matchedPairs[index] ?: 0,
@@ -798,9 +870,9 @@ fun GridBoard(
                                     .background(
                                         if (showExplosion) {
                                             when (gameState.matchedPairs[index]) {
-                                                1 -> BlueSky
-                                                2 -> Red
-                                                3 -> Green500
+                                                1 -> player1Color
+                                                2 -> player2Color
+                                                3 -> player1Color
                                                 else -> Color.LightGray
                                             }
                                         } else Color.LightGray

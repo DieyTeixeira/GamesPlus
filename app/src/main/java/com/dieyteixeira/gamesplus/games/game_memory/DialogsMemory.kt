@@ -1,6 +1,5 @@
 package com.dieyteixeira.gamesplus.games.game_memory
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dieyteixeira.gamesplus.ui.theme.Green500
+import com.dieyteixeira.gamesplus.ui.theme.Green
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,7 +69,7 @@ fun EndOneGameDialog(
                 Text(
                     text = message,
                     style = MaterialTheme.typography.headlineLarge.copy(
-                        color = if (gridSize.rows == 8) Green500 else Color.DarkGray,
+                        color = if (gridSize.rows == 8) Green else Color.DarkGray,
                         fontSize = 20.sp
                     ),
                     textAlign = TextAlign.Center
@@ -97,6 +96,136 @@ fun ShowClearRecordDialog(
             ) {
                 Text(
                     text = "Deseja excluir os dados de\nrecorde para esse nível?",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onNo() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Não",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onYes() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Sim",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun ShowRestartGameDialog(
+    onNo: () -> Unit = {},
+    onYes: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        buttons = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Deseja reiniciar essa partida?",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onNo() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Não",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onYes() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Sim",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun ShowReturnSettingsDialog(
+    onNo: () -> Unit = {},
+    onYes: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        buttons = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Deseja configurar uma nova partida?",
                     style = MaterialTheme.typography.headlineLarge.copy(
                         color = Color.DarkGray,
                         fontSize = 20.sp
