@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
+import com.dieyteixeira.gamesplus.games.game_snake.GameSnake
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
 import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
@@ -58,7 +59,10 @@ fun AppScreen() {
     val colorList = Blue
     val colorIntern = DarkBlue
 
-    Surface(color = colorList) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = colorList
+    ) {
         var currentIndex by remember { mutableStateOf(0) }
         var navigateClick by remember { mutableStateOf(false) }
 
@@ -162,12 +166,14 @@ fun BodyContent(
 @OptIn(ExperimentalAnimationApi::class)
 val screensGames = listOf<@Composable () -> Unit>(
     { MenuGames() },
-    { GameMemory() }
+    { GameMemory() },
+    { GameSnake() }
 )
 
 val textsGames = listOf(
     "Games Plus",
-    "Jogo da Memória"
+    "Jogo da Memória",
+    "Jogo da Cobrinha"
 )
 
 @Composable
@@ -190,6 +196,11 @@ fun NavigationDrawer(
             icon = Icons.Filled.Gamepad,
             text = "Jogo da Memória",
             index = 1
+        ) { onItemClicked(it) }
+        NavigationItem(
+            icon = Icons.Filled.Gamepad,
+            text = "Jogo da Cobrinha",
+            index = 2
         ) { onItemClicked(it) }
     }
 }

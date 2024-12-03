@@ -2,6 +2,9 @@ package com.dieyteixeira.gamesplus.games.game_memory
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
-import com.dieyteixeira.gamesplus.ui.theme.Red
 import kotlinx.coroutines.delay
 
 @Composable
@@ -74,7 +77,7 @@ fun GameMemory() {
             verticalArrangement = Arrangement.Center
         ) {
             if (showSettings) {
-                GameSettings(
+                SettingsMemory(
                     color = color,
                     gridSize = gridSize,
                     gameMode = gameMode,
@@ -105,6 +108,7 @@ fun GameMemory() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MemoryGame(
     config: GameConfig,
@@ -412,6 +416,14 @@ fun MemoryGame(
     val player1Victories = getTwoPlayersVictories(context, player1Name, player2Name, "Memoria")
     val player2Victories = getTwoPlayersVictories(context, player2Name, player1Name, "Memoria")
     val player1Record = getOnePlayerRecord(context, "${gridSizeAtual.rows}x${gridSizeAtual.columns}", "Memoria")
+    val scale1 by animateFloatAsState(
+        targetValue = if (gameState.currentPlayer == 1) 1f else 0.8f,
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+    )
+    val scale2 by animateFloatAsState(
+        targetValue = if (gameState.currentPlayer == 1) 0.8f else 1f,
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+    )
 
     // Desenho do tabuleiro
     Column(
@@ -425,8 +437,8 @@ fun MemoryGame(
                 .padding(10.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_arrow_left),
-                contentDescription = "Voltar",
+                painter = painterResource(id = R.drawable.ic_new_game),
+                contentDescription = "Novo Jogo",
                 colorFilter = ColorFilter.tint(Color.Gray),
                 modifier = Modifier
                     .size(23.dp)
@@ -435,7 +447,7 @@ fun MemoryGame(
             if (isTwoPlayers) {
                 Spacer(modifier = Modifier.width(25.dp))
                 Image(
-                    painter = painterResource(id = R.drawable.ic_p_layout_2x2),
+                    painter = painterResource(id = R.drawable.ic_restart),
                     contentDescription = "Reiniciar",
                     colorFilter = ColorFilter.tint(Color.Gray),
                     modifier = Modifier
@@ -503,87 +515,113 @@ fun MemoryGame(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
+                    Box(
                         modifier = Modifier
                             .width(150.dp)
-                            .height(40.dp)
-                            .background(
-                                color = if (gameState.currentPlayer == 1) player1Color else Color.LightGray.copy(
-                                    alpha = 0.5f
-                                ),
-                                shape = RoundedCornerShape(10.dp)
-                            ),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                            .height(40.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier.weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = player1Name,
-                                style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
-                                color = if (gameState.currentPlayer == 1) Color.White else player1Color
-                            )
-                        }
-                        Box(
+                        Row(
                             modifier = Modifier
-                                .fillMaxHeight()
-                                .width(40.dp)
-                                .padding(2.dp)
+                                .width(150.dp)
+                                .height(40.dp)
+                                .scale(scale1)
                                 .background(
-                                    Color.White,
-                                    shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
+                                    color = if (gameState.currentPlayer == 1) player1Color else player1Color.copy(
+                                        alpha = 0.5f
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
                                 ),
-                            contentAlignment = Alignment.Center
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "${countPairsByPlayer(gameState.matchedPairs, 1)}",
-                                style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
-                                color = player1Color
-                            )
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = player1Name,
+                                    style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
+                                    color = Color.White
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(40.dp)
+                                    .padding(2.dp)
+                                    .background(
+                                        Color.White,
+                                        shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${countPairsByPlayer(gameState.matchedPairs, 1)}",
+                                    style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
+                                    color = if (gameState.currentPlayer == 1) player1Color else player1Color.copy(
+                                        alpha = 0.5f
+                                    )
+                                )
+                            }
                         }
                     }
-                    Spacer(modifier = Modifier.width(15.dp))
-                    Row(
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    FlipPlayer(
+                        flipCard = if (gameState.currentPlayer == 1) FlipCard.Previous else FlipCard.Forward,
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Box(
                         modifier = Modifier
                             .width(150.dp)
-                            .height(40.dp)
-                            .background(
-                                color = if (gameState.currentPlayer == 2) player2Color else Color.LightGray.copy(
-                                    alpha = 0.5f
-                                ),
-                                shape = RoundedCornerShape(10.dp)
-                            ),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                            .height(40.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier
-                                .fillMaxHeight()
-                                .width(40.dp)
-                                .padding(2.dp)
+                                .width(150.dp)
+                                .height(40.dp)
+                                .scale(scale2)
                                 .background(
-                                    Color.White,
-                                    shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                                    color = if (gameState.currentPlayer == 2) player2Color else player2Color.copy(
+                                        alpha = 0.5f
+                                    ),
+                                    shape = RoundedCornerShape(10.dp)
                                 ),
-                            contentAlignment = Alignment.Center
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "${countPairsByPlayer(gameState.matchedPairs, 2)}",
-                                style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
-                                color = player2Color
-                            )
-                        }
-                        Box(
-                            modifier = Modifier.weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = player2Name,
-                                style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
-                                color = if (gameState.currentPlayer == 2) Color.White else Red
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(40.dp)
+                                    .padding(2.dp)
+                                    .background(
+                                        Color.White,
+                                        shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${countPairsByPlayer(gameState.matchedPairs, 2)}",
+                                    style = MaterialTheme.typography.displaySmall.copy(fontSize = 20.sp),
+                                    color = if (gameState.currentPlayer == 2) player2Color else player2Color.copy(
+                                        alpha = 0.5f
+                                    )
+                                )
+                            }
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = player2Name,
+                                    style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }

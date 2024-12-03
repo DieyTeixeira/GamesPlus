@@ -26,5 +26,5 @@ val Green = Color(0xFF07A312)
 val DarkGreen = Color(0xFF06690E)
 
 val Gray = Color(0xFF5C5F68)
-val GreenScreen = Color(0xFF8DA25A)
+val GreenScreen = Color(0xFFEFF1F5)
 val GreenComp = Color(0xFF2D321D)

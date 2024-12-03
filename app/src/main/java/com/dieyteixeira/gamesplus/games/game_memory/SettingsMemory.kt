@@ -1,5 +1,6 @@
 package com.dieyteixeira.gamesplus.games.game_memory
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,14 +24,17 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
 import com.dieyteixeira.gamesplus.ui.theme.Gray
@@ -41,7 +45,7 @@ import com.dieyteixeira.gamesplus.ui.theme.Red
 import com.dieyteixeira.gamesplus.ui.theme.Yellow
 
 @Composable
-fun GameSettings(
+fun SettingsMemory(
     color: Color,
     gridSize: GridSize,
     gameMode: GameMode,
@@ -57,6 +61,8 @@ fun GameSettings(
     onPlayer2ColorChange: (Color) -> Unit,
     onStartGame: (GameConfig) -> Unit
 ) {
+    val context = LocalContext.current
+    var showError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -99,12 +105,48 @@ fun GameSettings(
 
         Spacer(modifier = Modifier.height(25.dp))
 
+        val validationResult = when (gameMode) {
+            GameMode.OnePlayer -> {
+                val isNameValid = player1Name.isNotBlank()
+                val isColorValid = player1Color != Color.LightGray // Verifique se uma cor foi escolhida
+                Pair(
+                    isNameValid && isColorValid,
+                    when {
+                        !isNameValid -> "Preencha o nome do jogador!"
+                        !isColorValid -> "Escolha a cor do jogador!"
+                        else -> ""
+                    }
+                )
+            }
+            GameMode.TwoPlayers -> {
+                val isNameValid = player1Name.isNotBlank() && player2Name.isNotBlank()
+                val isColorValid = player1Color != Color.LightGray && player2Color != Color.LightGray
+                Pair(
+                    isNameValid && isColorValid,
+                    when {
+                        !isNameValid -> "Preencha os nomes dos jogadores!"
+                        !isColorValid -> "Escolha as cores dos jogadores!"
+                        else -> ""
+                    }
+                )
+            }
+        }
+
+        val isNameValid = validationResult.first
+        val textToast = validationResult.second
+
         Box(
             modifier = Modifier
                 .width(100.dp)
                 .height(35.dp)
                 .background(color, shape = RoundedCornerShape(100))
-                .clickable { onStartGame(GameConfig(gridSize, gameMode)) },
+                .clickable {
+                    if (isNameValid) {
+                        onStartGame(GameConfig(gridSize, gameMode))
+                    } else {
+                        showError = true
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -112,6 +154,11 @@ fun GameSettings(
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
                 color = if (color == Yellow) Color.Black else Color.White
             )
+        }
+
+        if (showError && !isNameValid) {
+            Toast.makeText(context, textToast, Toast.LENGTH_SHORT).show()
+            showError = false
         }
     }
 }
@@ -273,10 +320,10 @@ fun GameModeSelector(
                 .fillMaxWidth()
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Center
         ) {
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.width(150.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -292,9 +339,9 @@ fun GameModeSelector(
                     unavailableColors = listOf(player2Color)
                 )
             }
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(25.dp))
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.width(150.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
