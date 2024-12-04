@@ -1,4 +1,4 @@
-package com.dieyteixeira.gamesplus.games.game_snake
+package com.dieyteixeira.gamesplus.games.game_velha
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,13 +44,17 @@ import com.dieyteixeira.gamesplus.ui.theme.Red
 import com.dieyteixeira.gamesplus.ui.theme.Yellow
 
 @Composable
-fun SettingsSnake(
+fun SettingsVelha(
     color: Color,
-    playerName: String,
-    playerColor: Color,
-    onPlayerNameChange: (String) -> Unit,
-    onPlayerColorChange: (Color) -> Unit,
-    onStartGame: (SnakeState) -> Unit
+    player1Name: String,
+    player2Name: String,
+    player1Color: Color,
+    player2Color: Color,
+    onPlayer1NameChange: (String) -> Unit,
+    onPlayer2NameChange: (String) -> Unit,
+    onPlayer1ColorChange: (Color) -> Unit,
+    onPlayer2ColorChange: (Color) -> Unit,
+    onStartGame: (VelhaState) -> Unit
 ) {
     val context = LocalContext.current
     var showError by remember { mutableStateOf(false) }
@@ -68,23 +72,27 @@ fun SettingsSnake(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        GameSelectorSnake(
-            playerName = playerName,
-            playerColor = playerColor,
-            onPlayerNameChange = onPlayerNameChange,
-            onPlayerColorChange = onPlayerColorChange
+        GameSelectorVelha(
+            player1Name = player1Name,
+            player2Name = player2Name,
+            player1Color = player1Color,
+            player2Color = player2Color,
+            onPlayer1NameChange = onPlayer1NameChange,
+            onPlayer2NameChange = onPlayer2NameChange,
+            onPlayer1ColorChange = onPlayer1ColorChange,
+            onPlayer2ColorChange = onPlayer2ColorChange
         )
 
         Spacer(modifier = Modifier.height(25.dp))
 
         val validationResult =  {
-            val isNameValid = playerName.isNotBlank()
-            val isColorValid = playerColor != Color.LightGray // Verifique se uma cor foi escolhida
+            val isNameValid = player1Name.isNotBlank() && player2Name.isNotBlank()
+            val isColorValid = player1Color != Color.LightGray && player2Color != Color.LightGray
             Pair(
                 isNameValid && isColorValid,
                 when {
-                    !isNameValid -> "Preencha o nome do jogador!"
-                    !isColorValid -> "Escolha a cor do jogador!"
+                    !isNameValid -> "Preencha os nomes dos jogadores!"
+                    !isColorValid -> "Escolha as cores dos jogadores!"
                     else -> ""
                 }
             )
@@ -100,7 +108,7 @@ fun SettingsSnake(
                 .background(color, shape = RoundedCornerShape(100))
                 .clickable {
                     if (isValid) {
-                        onStartGame(SnakeState(playerName, playerColor))
+                        onStartGame(VelhaState())
                     } else {
                         showError = true
                     }
@@ -122,11 +130,15 @@ fun SettingsSnake(
 }
 
 @Composable
-fun GameSelectorSnake(
-    playerName: String,
-    playerColor: Color,
-    onPlayerNameChange: (String) -> Unit,
-    onPlayerColorChange: (Color) -> Unit
+fun GameSelectorVelha(
+    player1Name: String,
+    player2Name: String,
+    player1Color: Color,
+    player2Color: Color,
+    onPlayer1NameChange: (String) -> Unit,
+    onPlayer2NameChange: (String) -> Unit,
+    onPlayer1ColorChange: (Color) -> Unit,
+    onPlayer2ColorChange: (Color) -> Unit
 ) {
 
     Row(
@@ -141,23 +153,41 @@ fun GameSelectorSnake(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Jogador",
+                "Jogador 1  ",
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                 modifier = Modifier.padding(bottom = 5.dp)
             )
-            NameAndColorSnake(
-                name = playerName,
-                color = playerColor,
-                onNameChange = onPlayerNameChange,
-                onColorChange = onPlayerColorChange,
-                unavailableColors = emptyList()
+            NameAndColorVelha(
+                name = player1Name,
+                color = player1Color,
+                onNameChange = onPlayer1NameChange,
+                onColorChange = onPlayer1ColorChange,
+                unavailableColors = listOf(player2Color)
+            )
+        }
+        Spacer(modifier = Modifier.width(25.dp))
+        Column(
+            modifier = Modifier.width(150.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Jogador 2  ",
+                style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
+                modifier = Modifier.padding(bottom = 5.dp)
+            )
+            NameAndColorVelha(
+                name = player2Name,
+                color = player2Color,
+                onNameChange = onPlayer2NameChange,
+                onColorChange = onPlayer2ColorChange,
+                unavailableColors = listOf(player1Color)
             )
         }
     }
 }
 
 @Composable
-fun NameAndColorSnake(
+fun NameAndColorVelha(
     name: String,
     color: Color,
     onNameChange: (String) -> Unit,

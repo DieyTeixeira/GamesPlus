@@ -1,4 +1,4 @@
-package com.dieyteixeira.gamesplus.games.game_snake
+package com.dieyteixeira.gamesplus.games.game_tetris
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -44,13 +44,13 @@ import com.dieyteixeira.gamesplus.ui.theme.Red
 import com.dieyteixeira.gamesplus.ui.theme.Yellow
 
 @Composable
-fun SettingsSnake(
+fun SettingsTetris(
     color: Color,
     playerName: String,
     playerColor: Color,
     onPlayerNameChange: (String) -> Unit,
     onPlayerColorChange: (Color) -> Unit,
-    onStartGame: (SnakeState) -> Unit
+    onStartGame: (TetrisState) -> Unit
 ) {
     val context = LocalContext.current
     var showError by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun SettingsSnake(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        GameSelectorSnake(
+        GameSelectorTetris(
             playerName = playerName,
             playerColor = playerColor,
             onPlayerNameChange = onPlayerNameChange,
@@ -100,7 +100,15 @@ fun SettingsSnake(
                 .background(color, shape = RoundedCornerShape(100))
                 .clickable {
                     if (isValid) {
-                        onStartGame(SnakeState(playerName, playerColor))
+                        onStartGame(
+                            TetrisState(
+                                iniciar = true,
+                                board = Array(20) { Array(10) { Green.copy(alpha = 0.05f) } },
+                                currentTetromino = Tetromino(listOf(Pair(0, 0), Pair(1, 0), Pair(2, 0), Pair(3, 0)), DarkGreen1),
+                                position = Pair(0, 5),
+                                score = 0
+                            )
+                        )
                     } else {
                         showError = true
                     }
@@ -122,7 +130,7 @@ fun SettingsSnake(
 }
 
 @Composable
-fun GameSelectorSnake(
+fun GameSelectorTetris(
     playerName: String,
     playerColor: Color,
     onPlayerNameChange: (String) -> Unit,
@@ -145,7 +153,7 @@ fun GameSelectorSnake(
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                 modifier = Modifier.padding(bottom = 5.dp)
             )
-            NameAndColorSnake(
+            NameAndColorTetris(
                 name = playerName,
                 color = playerColor,
                 onNameChange = onPlayerNameChange,
@@ -157,7 +165,7 @@ fun GameSelectorSnake(
 }
 
 @Composable
-fun NameAndColorSnake(
+fun NameAndColorTetris(
     name: String,
     color: Color,
     onNameChange: (String) -> Unit,

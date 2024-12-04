@@ -210,7 +210,7 @@ fun ShowRestartGameDialog(
 }
 
 @Composable
-fun ShowReturnSettingsDialog(
+fun ShowReturnSettingsMemory(
     onNo: () -> Unit = {},
     onYes: () -> Unit = {}
 ) {

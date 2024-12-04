@@ -273,7 +273,7 @@ fun MemoryGame(
     }
 
     if (showReturnSettingsDialog) {
-        ShowReturnSettingsDialog(
+        ShowReturnSettingsMemory(
             onNo = { showReturnSettingsDialog = false },
             onYes = {
                 showReturnSettingsDialog = false
@@ -568,8 +568,8 @@ fun MemoryGame(
                     }
                     Spacer(modifier = Modifier.width(5.dp))
 
-                    FlipPlayer(
-                        flipCard = if (gameState.currentPlayer == 1) FlipCard.Previous else FlipCard.Forward,
+                    FlipPlayerMemory(
+                        flipCard = if (gameState.currentPlayer == 1) FlipCardMemory.Previous else FlipCardMemory.Forward,
                     )
 
                     Spacer(modifier = Modifier.width(5.dp))
@@ -653,6 +653,7 @@ fun MemoryGame(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(2.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.95f),
@@ -883,8 +884,8 @@ fun GridBoard(
                         }
                     }
 
-                    FlipRotate(
-                        flipCard = if (gameState.revealed[index] || gameState.matched[index]) FlipCard.Previous else FlipCard.Forward,
+                    FlipRotateMemory(
+                        flipCard = if (gameState.revealed[index] || gameState.matched[index]) FlipCardMemory.Previous else FlipCardMemory.Forward,
                         player1Color = player1Color,
                         player2Color = player2Color,
                         onClick = { onItemClick(index) },

@@ -331,7 +331,7 @@ fun GameModeSelector(
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                     modifier = Modifier.padding(bottom = 5.dp)
                 )
-                NameAndColorSelector(
+                NameAndColorMemory(
                     name = player1Name,
                     color = player1Color,
                     onNameChange = onPlayer1NameChange,
@@ -349,7 +349,7 @@ fun GameModeSelector(
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                     modifier = Modifier.padding(bottom = 5.dp)
                 )
-                NameAndColorSelector(
+                NameAndColorMemory(
                     name = player2Name,
                     color = player2Color,
                     onNameChange = onPlayer2NameChange,
@@ -375,7 +375,7 @@ fun GameModeSelector(
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                     modifier = Modifier.padding(bottom = 5.dp)
                 )
-                NameAndColorSelector(
+                NameAndColorMemory(
                     name = player1Name,
                     color = player1Color,
                     onNameChange = onPlayer1NameChange,
@@ -388,7 +388,7 @@ fun GameModeSelector(
 }
 
 @Composable
-fun NameAndColorSelector(
+fun NameAndColorMemory(
     name: String,
     color: Color,
     onNameChange: (String) -> Unit,

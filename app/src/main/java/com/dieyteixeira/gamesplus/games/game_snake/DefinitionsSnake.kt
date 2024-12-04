@@ -1,7 +1,6 @@
 package com.dieyteixeira.gamesplus.games.game_snake
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -14,7 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.Random
 
-data class State(
+data class SnakeState(
     val playerName: String = "",
     val playerColor: Color = Color.LightGray,
     val food: Pair<Int, Int> = Pair(5, 5),
@@ -28,8 +27,8 @@ class Game(private val scope: CoroutineScope, context: Context) {
 
     private val mutex = Mutex()
     private val mutableState =
-        MutableStateFlow(State(food = Pair(5, 5), snake = listOf(Pair(7, 7))))
-    val state: Flow<State> = mutableState
+        MutableStateFlow(SnakeState(food = Pair(5, 5), snake = listOf(Pair(7, 7))))
+    val state: Flow<SnakeState> = mutableState
 
     var move = Pair(1, 0)
         set(value) {
@@ -44,10 +43,6 @@ class Game(private val scope: CoroutineScope, context: Context) {
 
     private var gameJob: Job? = null
     private var speed: Long = 150L
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("game_preferences", Context.MODE_PRIVATE)
-
-    var highScoreSnake: Int = sharedPreferences.getInt("high_score_snake", 0)
 
     init {
         startGame()
@@ -64,11 +59,8 @@ class Game(private val scope: CoroutineScope, context: Context) {
                 delay(speed)
                 mutableState.update {
                     if (it.isGameOver) {
-                        if (it.score > highScoreSnake) {
-                            highScoreSnake = it.score
-                            saveHighScore(highScoreSnake) // Salva o novo recorde
-                        }
-                        return@update it // Pausa o jogo se estiver em "Game Over"
+
+                        return@update it
                     }
 
                     val newPosition = it.snake.first().let { poz ->
@@ -106,15 +98,11 @@ class Game(private val scope: CoroutineScope, context: Context) {
 
     fun reset() {
         mutableState.update {
-            State(food = Pair(5, 5), snake = listOf(Pair(7, 7)))
+            SnakeState(food = Pair(5, 5), snake = listOf(Pair(7, 7)))
         }
         move = Pair(1, 0)
         speed = 150L
         startGame()
-    }
-
-    private fun saveHighScore(score: Int) {
-        sharedPreferences.edit().putInt("high_score_snake", score).apply()
     }
 
     companion object {

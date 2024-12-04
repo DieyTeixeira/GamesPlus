@@ -1,4 +1,4 @@
-package com.dieyteixeira.gamesplus.games.game_snake
+package com.dieyteixeira.gamesplus.games.game_tetris
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,24 +27,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dieyteixeira.gamesplus.games.game_snake.ShowClearRecordSnake
+import com.dieyteixeira.gamesplus.games.game_snake.clearPlayerRecordSnake
+import com.dieyteixeira.gamesplus.games.game_snake.getPlayerRecordSnake
 
 @Composable
-fun ScoreSnake(
+fun ScoreTetris(
     color: Color,
     score: Int,
     speed: Long
 ) {
     val context = LocalContext.current
-    val playerRecordSnake = getPlayerRecordSnake(context, "Snake")
-    var showClearRecordSnake by remember { mutableStateOf(false) }
+    val playerRecordTetris = getPlayerRecordTetris(context, "Tetris")
+    var showClearRecordTetris by remember { mutableStateOf(false) }
 
-    if (showClearRecordSnake) {
-        ShowClearRecordSnake(
-            onNo = { showClearRecordSnake = false },
+    if (showClearRecordTetris) {
+        ShowClearRecordTetris(
+            onNo = { showClearRecordTetris = false },
             onYes = {
-                showClearRecordSnake = false
+                showClearRecordTetris = false
 
-                clearPlayerRecordSnake(context, "Snake")
+                clearPlayerRecordTetris(context, "Tetris")
                 Toast.makeText(context, "Recorde zerado!", Toast.LENGTH_SHORT).show()
             }
         )
@@ -98,7 +99,7 @@ fun ScoreSnake(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Nível",
+                text = "Dificult",
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 12.sp),
                 color = Color.White,
                 modifier = Modifier
@@ -153,7 +154,7 @@ fun ScoreSnake(
                     color = color.copy(alpha = 0.7f),
                     shape = RoundedCornerShape(10.dp)
                 )
-                .clickable { showClearRecordSnake = true },
+                .clickable { showClearRecordTetris = true },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -174,7 +175,7 @@ fun ScoreSnake(
                         .padding(3.dp)
                 )
                 Text(
-                    text = "${playerRecordSnake.first}",
+                    text = "${playerRecordTetris.first}",
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 25.sp),
                     color = Color.White,
                     modifier = Modifier.height(40.dp)
@@ -203,7 +204,7 @@ fun ScoreSnake(
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(
-                        text = "${playerRecordSnake.second}",
+                        text = "${playerRecordTetris.second}",
                         style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp),
                         color = Color.White
                     )

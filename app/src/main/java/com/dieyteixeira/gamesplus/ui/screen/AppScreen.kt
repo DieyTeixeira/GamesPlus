@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +51,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
+import com.dieyteixeira.gamesplus.games.game_memory.clickable
 import com.dieyteixeira.gamesplus.games.game_snake.GameSnake
+import com.dieyteixeira.gamesplus.games.game_tetris.GameTetris
+import com.dieyteixeira.gamesplus.games.game_velha.GameVelha
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
 import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
@@ -167,13 +173,17 @@ fun BodyContent(
 val screensGames = listOf<@Composable () -> Unit>(
     { MenuGames() },
     { GameMemory() },
-    { GameSnake() }
+    { GameSnake() },
+    { GameVelha() },
+    { GameTetris() }
 )
 
 val textsGames = listOf(
     "Games Plus",
-    "Jogo da Memória",
-    "Jogo da Cobrinha"
+    "Memória",
+    "Snake",
+    "Velha",
+    "Tetris"
 )
 
 @Composable
@@ -187,66 +197,99 @@ fun NavigationDrawer(
             .background(color)
     ) {
         NavigationItem(
-            icon = Icons.AutoMirrored.Filled.List,
-            text = "Lista",
+            icon = null,
+            box = false,
+            text = "lista de jogos",
             index = 0,
             topPadding = 100.dp
         ) { onItemClicked(it) }
         NavigationItem(
-            icon = Icons.Filled.Gamepad,
-            text = "Jogo da Memória",
+            icon = painterResource(id = R.drawable.ic_game_memory),
+            box = true,
+            text = "Memória",
             index = 1
         ) { onItemClicked(it) }
         NavigationItem(
-            icon = Icons.Filled.Gamepad,
-            text = "Jogo da Cobrinha",
+            icon = painterResource(id = R.drawable.ic_game_snake),
+            box = true,
+            text = "Snake",
             index = 2
         ) { onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_velha),
+            box = true,
+            text = "Velha",
+            index = 3
+        ) { onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_tetris),
+            box = true,
+            text = "Tetris",
+            index = 4
+        ) { onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_pacman),
+            box = true,
+            text = "Pacman",
+            index = 5
+        ) {  }
     }
 }
 
 @Composable
 fun NavigationItem(
-    icon: ImageVector,
+    icon: Painter?,
+    box: Boolean,
     text: String,
     index: Int,
     topPadding: Dp = 8.dp,
     bottomPadding: Dp = 8.dp,
     onItemClicked: (Int) -> Unit
 ) {
+    val spacer = if (box) 20.dp else 50.dp
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, top = topPadding, bottom = bottomPadding)
+            .padding(start = spacer, top = topPadding, bottom = bottomPadding)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ) { onItemClicked(index) }
     ) {
-        Row(
-            modifier = Modifier
-                .size(200.dp, 35.dp)
-                .background(
-                    Color.White.copy(alpha = 0.2f),
-                    CutCornerShape(35.dp, 0.dp, 35.dp, 0.dp)
-                )
+        Box(
+            contentAlignment = Alignment.CenterStart
         ) {
+            if (box) {
+                Box(
+                    modifier = Modifier
+                        .size(220.dp, 35.dp)
+                        .background(
+                            Color.White.copy(alpha = 0.2f),
+                            CutCornerShape(35.dp, 0.dp, 35.dp, 0.dp)
+                        )
+                )
+            }
             Row(
-                modifier = Modifier
-                    .padding(start = 5.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    imageVector = icon,
-                    contentDescription = "Item Image",
-                    colorFilter = ColorFilter.tint(Color.White),
-                    modifier = Modifier.size(30.dp)
-                )
+                icon?.let {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Image(
+                        painter = icon,
+                        contentDescription = "Item Image",
+                        colorFilter = ColorFilter.tint(Color.White),
+                        modifier = Modifier.size(45.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = text,
-                    color = Color.White,
-                    fontSize = 20.sp
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        color = Color.White,
+                        fontSize = 20.sp
+                    )
                 )
             }
         }

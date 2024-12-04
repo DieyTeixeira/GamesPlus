@@ -23,7 +23,7 @@ val LightYellow = Color(0xFFFFFF00)
 val Lime = Color(0xFF84CC16)
 val LightGreen = Color(0xFF6FCF97)
 val Green = Color(0xFF07A312)
-val DarkGreen = Color(0xFF06690E)
+val DarkGreen2 = Color(0xFF06690E)
 
 val Gray = Color(0xFF5C5F68)
 val GreenScreen = Color(0xFFEFF1F5)

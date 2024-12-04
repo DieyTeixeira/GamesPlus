@@ -1,4 +1,4 @@
-package com.dieyteixeira.gamesplus.games.game_snake
+package com.dieyteixeira.gamesplus.games.game_tetris
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,27 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.dieyteixeira.gamesplus.ui.theme.GreenComp
 
 @Composable
-fun ButtonsSnake(onDirectionChange: (Pair<Int, Int>) -> Unit) {
+fun ButtonsTetris(onMove: (Move) -> Unit) {
     val buttonSize = 70
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(5.dp)) {
-        Box(
-            modifier = Modifier
-                .height(buttonSize.dp)
-                .width(buttonSize.dp)
-                .background(
-                    GreenComp,
-                    RoundedCornerShape(10.dp)
-                )
-                .clickable { onDirectionChange(Pair(0, -1)) },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size((buttonSize - 20).dp)
-            )
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(10.dp)) {
         Row {
             Box(
                 modifier = Modifier
@@ -55,7 +36,7 @@ fun ButtonsSnake(onDirectionChange: (Pair<Int, Int>) -> Unit) {
                         GreenComp,
                         RoundedCornerShape(10.dp)
                     )
-                    .clickable { onDirectionChange(Pair(-1, 0)) },
+                    .clickable { onMove(Move.Left) },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -65,7 +46,7 @@ fun ButtonsSnake(onDirectionChange: (Pair<Int, Int>) -> Unit) {
                     modifier = Modifier.size((buttonSize - 20).dp)
                 )
             }
-            Spacer(modifier = Modifier.size(buttonSize.dp))
+            Spacer(modifier = Modifier.size(15.dp))
             Box(
                 modifier = Modifier
                     .height(buttonSize.dp)
@@ -74,7 +55,7 @@ fun ButtonsSnake(onDirectionChange: (Pair<Int, Int>) -> Unit) {
                         GreenComp,
                         RoundedCornerShape(10.dp)
                     )
-                    .clickable { onDirectionChange(Pair(1, 0)) },
+                    .clickable { onMove(Move.Right) },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -84,24 +65,25 @@ fun ButtonsSnake(onDirectionChange: (Pair<Int, Int>) -> Unit) {
                     modifier = Modifier.size((buttonSize - 20).dp)
                 )
             }
-        }
-        Box(
-            modifier = Modifier
-                .height(buttonSize.dp)
-                .width(buttonSize.dp)
-                .background(
-                    GreenComp,
-                    RoundedCornerShape(10.dp)
+            Spacer(modifier = Modifier.size(15.dp))
+            Box(
+                modifier = Modifier
+                    .height(buttonSize.dp)
+                    .width(buttonSize.dp)
+                    .background(
+                        GreenComp,
+                        RoundedCornerShape(10.dp)
+                    )
+                    .clickable { onMove(Move.Drop) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size((buttonSize - 20).dp)
                 )
-                .clickable { onDirectionChange(Pair(0, 1)) },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size((buttonSize - 20).dp)
-            )
+            }
         }
     }
 }
