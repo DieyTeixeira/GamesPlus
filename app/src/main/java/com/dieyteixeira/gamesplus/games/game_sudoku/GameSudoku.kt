@@ -4,6 +4,7 @@ import android.R.attr.maxWidth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -173,14 +174,20 @@ fun SudokuCell(
                                 else -> RoundedCornerShape(20)
                             }
                         )
-                        .clickable { onClick() },
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onClick() },
                     contentAlignment = Alignment.Center
                 ) {}
                 Box(
                     modifier = Modifier
                         .height(38.dp)
                         .width(35.dp)
-                        .clickable { onClick() },
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     if (value.isNotEmpty()) {
@@ -312,7 +319,10 @@ fun NumberBox(
         modifier = Modifier
             .width(60.dp)
             .height(70.dp)
-            .clickable {
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
                 selectedNumber.value = number
                 onNumberClick(number)
             }
