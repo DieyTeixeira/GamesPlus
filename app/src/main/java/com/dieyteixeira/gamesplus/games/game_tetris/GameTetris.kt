@@ -1,31 +1,15 @@
 package com.dieyteixeira.gamesplus.games.game_tetris
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,13 +25,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
-import com.dieyteixeira.gamesplus.games.game_memory.ShowRestartGameDialog
-import com.dieyteixeira.gamesplus.games.game_memory.generateGrid
-import com.dieyteixeira.gamesplus.games.game_snake.ScoreSnake
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
-import com.dieyteixeira.gamesplus.ui.theme.GreenComp
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,7 +49,15 @@ fun GameTetris(
 
     val onStartGame: (TetrisState) -> Unit = { config ->
         showSettings = false
-        game.reset()
+        game.resetGameTetris()
+    }
+
+    LaunchedEffect(navigateClick) {
+        if (navigateClick) {
+            game.pauseGameTetris()
+        } else {
+            game.pauseGameTetris()
+        }
     }
 
     if (showReturnSettingsTetris) {
@@ -79,6 +66,7 @@ fun GameTetris(
             onYes = {
                 showReturnSettingsTetris = false
                 showSettings = true
+                game.stopGameTetris()
             }
         )
     }
@@ -88,7 +76,7 @@ fun GameTetris(
             onNo = { showRestartGameTetris = false },
             onYes = {
                 showRestartGameTetris = false
-                game.reset()
+                game.resetGameTetris()
             }
         )
     }
@@ -103,12 +91,12 @@ fun GameTetris(
             recordScore = playerRecordTetris.first,
             onNewGame = {
                 showEndGameTetris = false
-                game.reset()
                 showSettings = true
+                game.stopGameTetris()
             },
             onRestartGame = {
                 showEndGameTetris = false
-                game.reset()
+                game.resetGameTetris()
             }
         )
     }

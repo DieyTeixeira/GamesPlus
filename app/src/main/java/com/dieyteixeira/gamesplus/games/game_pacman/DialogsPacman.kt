@@ -405,3 +405,68 @@ fun ShowClearRecordPacman(
         }
     )
 }
+
+@Composable
+fun ShowStopGamePacman(
+    onNo: () -> Unit = {},
+    onYes: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        buttons = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Deseja sair da partida?",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onNo() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Não",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(35.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(100))
+                            .clickable { onYes() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Sim",
+                            style = MaterialTheme.typography.displaySmall.copy(fontSize = 14.sp),
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    )
+}

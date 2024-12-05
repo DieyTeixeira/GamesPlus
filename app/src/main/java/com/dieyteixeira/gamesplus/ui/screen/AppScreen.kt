@@ -50,6 +50,7 @@ import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
 import com.dieyteixeira.gamesplus.games.game_memory.clickable
 import com.dieyteixeira.gamesplus.games.game_pacman.GamePacman
 import com.dieyteixeira.gamesplus.games.game_snake.GameSnake
+import com.dieyteixeira.gamesplus.games.game_sudoku.GameSudoku
 import com.dieyteixeira.gamesplus.games.game_tetris.GameTetris
 import com.dieyteixeira.gamesplus.games.game_velha.GameVelha
 import com.dieyteixeira.gamesplus.ui.theme.Blue
@@ -172,7 +173,8 @@ val screensGames = listOf<@Composable (Boolean) -> Unit>(
     { navigateClick -> GameSnake(navigateClick) },
     { navigateClick -> GameVelha(navigateClick) },
     { navigateClick -> GameTetris(navigateClick) },
-    { navigateClick -> GamePacman(navigateClick) }
+    { navigateClick -> GamePacman(navigateClick) },
+    { navigateClick -> GameSudoku(navigateClick) }
 )
 
 val textsGames = listOf(
@@ -181,7 +183,8 @@ val textsGames = listOf(
     "Snake",
     "Velha",
     "Tetris",
-    "Pacman"
+    "Pacman",
+    "Sudoku"
 )
 
 @Composable
@@ -230,6 +233,12 @@ fun NavigationDrawer(
             box = true,
             text = "Pacman",
             index = 5
+        ) { onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_velha),
+            box = true,
+            text = "Sudoku",
+            index = 6
         ) { onItemClicked(it) }
     }
 }

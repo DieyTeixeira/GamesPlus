@@ -1,7 +1,6 @@
 package com.dieyteixeira.gamesplus.games.game_tetris
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.compose.ui.graphics.Color
 import com.dieyteixeira.gamesplus.ui.theme.GreenComp
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +26,7 @@ data class TetrisState(
     val position: Pair<Int, Int>,
     val score: Int = 0,
     val speed: Long = 500L,
+    val isPaused: Boolean = false,
     val isGameOver: Boolean = false
 )
 
@@ -56,8 +56,12 @@ class TetrisGame(
             while (true) {
                 delay(speed)
                 mutableState.update {
-                    if (it.isGameOver) {
 
+                    if (it.isPaused) {
+                        return@update it
+                    }
+
+                    if (it.isGameOver) {
                         return@update it
                     }
 
@@ -90,13 +94,22 @@ class TetrisGame(
         }
     }
 
-    fun reset() {
+    fun resetGameTetris() {
         mutableState.update {
             TetrisState(board = Array(20) { Array(10) { GreenComp.copy(alpha = 0.05f) } },
                 currentTetromino = generateNewTetromino(), position = Pair(0, 5))
         }
         speed = 500L
         startGame()
+    }
+
+    fun pauseGameTetris() {
+        mutableState.update { it.copy(isPaused = !it.isPaused) }
+    }
+
+    fun stopGameTetris() {
+        gameJob?.cancel()
+        mutableState.update { it.copy(isPaused = false, isGameOver = false) }
     }
 
     private fun checkCollision(tetromino: Tetromino, position: Pair<Int, Int>, board: Array<Array<Color>>): Boolean {

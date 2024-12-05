@@ -28,6 +28,12 @@ val Typography = Typography(
     // números dos cards
     titleLarge = TextStyle(
         fontFamily = FontFamily(Font(R.font.font_memory3))
-    )
+    ),
 
+    labelSmall = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp,
+    )
 )

@@ -1,5 +1,6 @@
 package com.dieyteixeira.gamesplus.games.game_pacman
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,12 +56,15 @@ fun GamePacman(
 
     val onStartGame: (PacmanState) -> Unit = { config ->
         showSettings = false
-        game.reset()
+        game.resetGamePacman()
     }
 
-    if (navigateClick) {
-        game.stopAllJobs()
-        game.reset()
+    LaunchedEffect(navigateClick) {
+        if (navigateClick) {
+            game.pauseGamePacman()
+        } else {
+            game.pauseGamePacman()
+        }
     }
 
     if (showReturnSettingsPacman) {
@@ -69,7 +73,7 @@ fun GamePacman(
             onYes = {
                 showReturnSettingsPacman = false
                 showSettings = true
-                game.stopAllJobs()
+                game.stopGamePacman()
             }
         )
     }
@@ -84,12 +88,12 @@ fun GamePacman(
             recordScore = playerRecordPacman.first,
             onNewGame = {
                 showEndGamePacman = false
-                game.reset()
                 showSettings = true
+                game.stopGamePacman()
             },
             onRestartGame = {
                 showEndGamePacman = false
-                game.reset()
+                game.resetGamePacman()
             }
         )
     }
@@ -152,6 +156,7 @@ fun GamePacman(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun BoardPacMan(state: PacmanState) {
     BoxWithConstraints(

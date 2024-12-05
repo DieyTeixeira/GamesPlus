@@ -24,6 +24,7 @@ data class PacmanState(
     val direction: String = "right",
     val currentDirection: Pair<Int, Int> = Pair(1, 0),
     val isGameOver: Boolean = false,
+    val isPaused: Boolean = false,
     val isInvulnerable: Boolean = false,
     val ghostVulnerabilities: List<Boolean> = listOf(false, false, false, false)
 )
@@ -58,8 +59,6 @@ class PacmanGame(private val scope: CoroutineScope, context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("game_preferences", Context.MODE_PRIVATE)
 
-    var highScorePacMan: Int = sharedPreferences.getInt("high_score_pacman", 0)
-
     private fun startGame() {
         gameJob?.cancel()
         invulnerabilityJob?.cancel()
@@ -74,11 +73,12 @@ class PacmanGame(private val scope: CoroutineScope, context: Context) {
             while (true) {
                 delay(200L)
                 mutableState.update {
+
+                    if (it.isPaused) {
+                        return@update it
+                    }
+
                     if (it.isGameOver) {
-                        if (it.score > highScorePacMan) {
-                            highScorePacMan = it.score
-                            saveHighScore(highScorePacMan) // Salva o novo recorde
-                        }
                         return@update it
                     }
 
@@ -397,7 +397,7 @@ class PacmanGame(private val scope: CoroutineScope, context: Context) {
         return possibleMoves
     }
 
-    fun reset() {
+    fun resetGamePacman() {
         mutableState.update {
             PacmanState(
                 pacman = Pair(12, 18),
@@ -413,9 +413,16 @@ class PacmanGame(private val scope: CoroutineScope, context: Context) {
         startGame()
     }
 
-    fun stopAllJobs() {
+    fun pauseGamePacman() {
+        mutableState.update { currentState ->
+            currentState.copy(isPaused = !currentState.isPaused)
+        }
+    }
+
+    fun stopGamePacman() {
         gameJob?.cancel()
         invulnerabilityJob?.cancel()
+        mutableState.update { it.copy(isPaused = false, isGameOver = false) }
     }
 
     private fun saveHighScore(score: Int) {

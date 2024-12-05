@@ -2,7 +2,6 @@ package com.dieyteixeira.gamesplus.games.game_snake
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,6 +47,15 @@ fun GameSnake(
 
     val onStartGame: (SnakeState) -> Unit = { config ->
         showSettings = false
+        game.resetGameSnake()
+    }
+
+    LaunchedEffect(navigateClick) {
+        if (navigateClick) {
+            game.pauseGameSnake()
+        } else {
+            game.pauseGameSnake()
+        }
     }
 
     if (showReturnSettingsSnake) {
@@ -56,6 +64,7 @@ fun GameSnake(
             onYes = {
                 showReturnSettingsSnake = false
                 showSettings = true
+                game.stopGameSnake()
             }
         )
     }
@@ -70,12 +79,12 @@ fun GameSnake(
             recordScore = playerRecordSnake.first,
             onNewGame = {
                 showEndGameSnake = false
-                game.reset()
                 showSettings = true
+                game.stopGameSnake()
             },
             onRestartGame = {
                 showEndGameSnake = false
-                game.reset()
+                game.resetGameSnake()
             }
         )
     }

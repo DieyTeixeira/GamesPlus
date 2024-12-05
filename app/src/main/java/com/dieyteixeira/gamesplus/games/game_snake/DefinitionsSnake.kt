@@ -20,6 +20,7 @@ data class SnakeState(
     val snake: List<Pair<Int, Int>> = listOf(Pair(7, 7)),
     val score: Int = 0,
     val speed: Long = 150L,
+    val isPaused: Boolean = false,
     val isGameOver: Boolean = false
 )
 
@@ -58,8 +59,12 @@ class Game(private val scope: CoroutineScope, context: Context) {
             while (true) {
                 delay(speed)
                 mutableState.update {
-                    if (it.isGameOver) {
 
+                    if (it.isPaused) {
+                        return@update it
+                    }
+
+                    if (it.isGameOver) {
                         return@update it
                     }
 
@@ -96,13 +101,30 @@ class Game(private val scope: CoroutineScope, context: Context) {
         }
     }
 
-    fun reset() {
+    fun resetGameSnake() {
         mutableState.update {
             SnakeState(food = Pair(5, 5), snake = listOf(Pair(7, 7)))
         }
         move = Pair(1, 0)
         speed = 150L
         startGame()
+    }
+
+    fun pauseGameSnake() {
+        mutableState.update { currentState ->
+            currentState.copy(isPaused = !currentState.isPaused)
+        }
+    }
+
+    fun stopGameSnake() {
+        gameJob?.cancel()
+        gameJob = null
+        mutableState.update {
+            SnakeState()
+            it.copy(isPaused = false, isGameOver = false)
+        }
+        move = Pair(1, 0)
+        speed = 150L
     }
 
     companion object {
