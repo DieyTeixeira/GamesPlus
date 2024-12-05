@@ -51,7 +51,9 @@ import com.dieyteixeira.gamesplus.ui.theme.GreenComp
 import kotlinx.coroutines.delay
 
 @Composable
-fun GameTetris() {
+fun GameTetris(
+    navigateClick: Boolean
+) {
     val color = DarkBlue
 
     val scope = rememberCoroutineScope()

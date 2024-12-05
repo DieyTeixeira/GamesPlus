@@ -30,7 +30,9 @@ import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
 import kotlinx.coroutines.delay
 
 @Composable
-fun GameSnake() {
+fun GameSnake(
+    navigateClick: Boolean
+) {
     val color = DarkBlue
 
     val scope = rememberCoroutineScope()

@@ -26,9 +26,6 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Gamepad
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -43,7 +40,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -52,13 +48,12 @@ import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
 import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
 import com.dieyteixeira.gamesplus.games.game_memory.clickable
+import com.dieyteixeira.gamesplus.games.game_pacman.GamePacman
 import com.dieyteixeira.gamesplus.games.game_snake.GameSnake
 import com.dieyteixeira.gamesplus.games.game_tetris.GameTetris
 import com.dieyteixeira.gamesplus.games.game_velha.GameVelha
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
-import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
-import com.dieyteixeira.gamesplus.ui.theme.Orange
 
 @Composable
 fun AppScreen() {
@@ -84,7 +79,9 @@ fun AppScreen() {
                 currentIndex = currentIndex,
                 colorIntern = colorIntern,
                 navigateClick = navigateClick,
-                onMenuToggle = { navigateClick = !navigateClick }
+                onMenuToggle = {
+                    navigateClick = !navigateClick
+                }
             )
         }
     }
@@ -163,19 +160,19 @@ fun BodyContent(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                screensGames[currentIndex]()
+                screensGames[currentIndex](navigateClick)
             }
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
-val screensGames = listOf<@Composable () -> Unit>(
-    { MenuGames() },
-    { GameMemory() },
-    { GameSnake() },
-    { GameVelha() },
-    { GameTetris() }
+val screensGames = listOf<@Composable (Boolean) -> Unit>(
+    { navigateClick -> MenuGames(navigateClick) },
+    { navigateClick -> GameMemory(navigateClick) },
+    { navigateClick -> GameSnake(navigateClick) },
+    { navigateClick -> GameVelha(navigateClick) },
+    { navigateClick -> GameTetris(navigateClick) },
+    { navigateClick -> GamePacman(navigateClick) }
 )
 
 val textsGames = listOf(
@@ -183,7 +180,8 @@ val textsGames = listOf(
     "Memória",
     "Snake",
     "Velha",
-    "Tetris"
+    "Tetris",
+    "Pacman"
 )
 
 @Composable
@@ -232,7 +230,7 @@ fun NavigationDrawer(
             box = true,
             text = "Pacman",
             index = 5
-        ) {  }
+        ) { onItemClicked(it) }
     }
 }
 
@@ -297,7 +295,9 @@ fun NavigationItem(
 }
 
 @Composable
-fun MenuGames() {
+fun MenuGames(
+    navigateClick: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxSize(),

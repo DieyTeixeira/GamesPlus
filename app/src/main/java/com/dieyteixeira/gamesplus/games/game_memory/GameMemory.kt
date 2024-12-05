@@ -48,7 +48,9 @@ import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
 import kotlinx.coroutines.delay
 
 @Composable
-fun GameMemory() {
+fun GameMemory(
+    navigateClick: Boolean
+) {
     val color = DarkBlue
 
     var gridSize by remember { mutableStateOf(GridSize(4, 3)) }
