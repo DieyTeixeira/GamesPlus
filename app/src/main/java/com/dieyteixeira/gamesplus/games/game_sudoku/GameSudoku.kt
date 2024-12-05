@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,7 +34,7 @@ import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
 fun GameSudoku(
     navigateClick: Boolean
 ) {
-    val boardState = remember { mutableStateOf(Array(9) { Array<Int?>(9) { null } }) }
+    val boardState = remember { mutableStateOf(Array(9) { Array(9) { mutableSetOf<Int>() } }) }
     val selectedNumber = remember { mutableStateOf<Int?>(null) }
     val highlightedCells = remember { mutableStateOf(setOf<Pair<Int, Int>>()) } // Células a destacar
 
@@ -49,10 +50,13 @@ fun GameSudoku(
             highlightedCells = highlightedCells.value,
             onCellClick = { row, col ->
                 selectedNumber.value?.let { number ->
-                    if (boardState.value[row][col] == number) {
-                        boardState.value[row][col] = null
+                    val cell = boardState.value[row][col]
+                    if (cell.contains(number)) {
+                        // Remove o número se já estiver presente
+                        cell.remove(number)
                     } else {
-                        boardState.value[row][col] = number
+                        // Adiciona o número se não estiver presente
+                        cell.add(number)
                     }
                     highlightedCells.value = highlightOccurrences(boardState.value, number)
                 }
@@ -71,7 +75,7 @@ fun GameSudoku(
 
 @Composable
 fun SudokuBoard(
-    board: Array<Array<Int?>>,
+    board: Array<Array<MutableSet<Int>>>,
     highlightedCells: Set<Pair<Int, Int>>,
     onCellClick: (Int, Int) -> Unit
 ) {
@@ -136,7 +140,7 @@ fun SudokuBoard(
 
 @Composable
 fun SudokuCell(
-    value: Int?,
+    value: Set<Int>,
     row: Int,
     col: Int,
     isHighlighted: Boolean,
@@ -156,19 +160,76 @@ fun SudokuCell(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(33.dp)
+                        .size(if (value.size == 1) 33.dp else 36.dp)
                         .background(
                             color = when {
-                                value == null -> Color.Transparent
+                                value.isEmpty() -> Color.Transparent
+                                isDuplicate -> Color.Red
                                 isHighlighted -> DarkYellow.copy(alpha = 0.8f)
                                 else -> DarkYellow.copy(alpha = 0.2f)
                             },
-                            shape = RoundedCornerShape(100)
+                            shape = when {
+                                value.size == 1 -> RoundedCornerShape(100)
+                                else -> RoundedCornerShape(20)
+                            }
                         )
                         .clickable { onClick() },
                     contentAlignment = Alignment.Center
+                ) {}
+                Box(
+                    modifier = Modifier
+                        .height(38.dp)
+                        .width(35.dp)
+                        .clickable { onClick() },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = value?.toString() ?: "", fontSize = 18.sp, color = if (isDuplicate) Color.Red else Color.Black)
+                    if (value.isNotEmpty()) {
+                        if (value.size == 1) {
+                            // Exibe o número único centralizado
+                            Box(
+                                modifier = Modifier.fillMaxSize(), // Preenche o espaço disponível
+                                contentAlignment = Alignment.Center // Centraliza o número
+                            ) {
+                                Text(
+                                    text = value.first().toString(),
+                                    fontSize = 16.sp,
+                                    color = if (isHighlighted || isDuplicate) Color.White else Color.Black
+                                )
+                            }
+                        } else {
+                            // Exibe os números em grade 3x3
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                for (i in 0..2) { // Três linhas
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
+                                    ) {
+                                        for (j in 0..2) { // Três colunas
+                                            val numberIndex = i * 3 + j
+                                            val number = value.sorted().getOrNull(numberIndex)
+                                            if (number != null) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(12.dp),
+                                                    contentAlignment = Alignment.TopCenter
+                                                ) {
+                                                    Text(
+                                                        text = number.toString(),
+                                                        fontSize = 8.sp,
+                                                        color = if (isHighlighted || isDuplicate) Color.White else Color.Black
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -198,7 +259,7 @@ fun SudokuCell(
 @Composable
 fun NumberSelector(
     selectedNumber: MutableState<Int?>,
-    boardState: Array<Array<Int?>>,
+    boardState: Array<Array<MutableSet<Int>>>,
     onNumberClick: (Int) -> Unit
 ) {
     val numberCounts = countOccurrences(boardState) // Contagem de números
@@ -278,11 +339,11 @@ fun NumberBox(
     }
 }
 
-fun highlightOccurrences(board: Array<Array<Int?>>, number: Int): Set<Pair<Int, Int>> {
+fun highlightOccurrences(board: Array<Array<MutableSet<Int>>>, number: Int): Set<Pair<Int, Int>> {
     val highlightedCells = mutableSetOf<Pair<Int, Int>>()
     for (row in board.indices) {
         for (col in board[row].indices) {
-            if (board[row][col] == number) {
+            if (board[row][col].contains(number)) {
                 highlightedCells.add(row to col)
             }
         }
@@ -290,27 +351,27 @@ fun highlightOccurrences(board: Array<Array<Int?>>, number: Int): Set<Pair<Int, 
     return highlightedCells
 }
 
-fun countOccurrences(board: Array<Array<Int?>>): Map<Int, Int> {
+fun countOccurrences(board: Array<Array<MutableSet<Int>>>): Map<Int, Int> {
     val counts = mutableMapOf<Int, Int>()
     for (row in board) {
         for (cell in row) {
-            if (cell != null) {
-                counts[cell] = counts.getOrDefault(cell, 0) + 1
+            for (number in cell) {
+                counts[number] = counts.getOrDefault(number, 0) + 1
             }
         }
     }
     return counts
 }
 
-fun findDuplicates(board: Array<Array<Int?>>): Set<Pair<Int, Int>> {
+fun findDuplicates(board: Array<Array<MutableSet<Int>>>): Set<Pair<Int, Int>> {
     val duplicates = mutableSetOf<Pair<Int, Int>>()
 
     // Verificar duplicados em linhas
     for (row in board.indices) {
         val seen = mutableMapOf<Int, MutableList<Int>>()
         for (col in board[row].indices) {
-            board[row][col]?.let {
-                seen[it]?.add(col) ?: seen.put(it, mutableListOf(col))
+            for (number in board[row][col]) {
+                seen[number]?.add(col) ?: seen.put(number, mutableListOf(col))
             }
         }
         seen.values.filter { it.size > 1 }.forEach { cols ->
@@ -322,8 +383,8 @@ fun findDuplicates(board: Array<Array<Int?>>): Set<Pair<Int, Int>> {
     for (col in board[0].indices) {
         val seen = mutableMapOf<Int, MutableList<Int>>()
         for (row in board.indices) {
-            board[row][col]?.let {
-                seen[it]?.add(row) ?: seen.put(it, mutableListOf(row))
+            for (number in board[row][col]) {
+                seen[number]?.add(row) ?: seen.put(number, mutableListOf(row))
             }
         }
         seen.values.filter { it.size > 1 }.forEach { rows ->
@@ -339,9 +400,9 @@ fun findDuplicates(board: Array<Array<Int?>>): Set<Pair<Int, Int>> {
                 for (col in 0 until 3) {
                     val currentRow = boxRow * 3 + row
                     val currentCol = boxCol * 3 + col
-                    board[currentRow][currentCol]?.let {
-                        seen[it]?.add(currentRow to currentCol) ?: seen.put(
-                            it,
+                    for (number in board[currentRow][currentCol]) {
+                        seen[number]?.add(currentRow to currentCol) ?: seen.put(
+                            number,
                             mutableListOf(currentRow to currentCol)
                         )
                     }
