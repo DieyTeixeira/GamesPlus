@@ -25,6 +25,7 @@ val LightGreen = Color(0xFF6FCF97)
 val Green = Color(0xFF07A312)
 val DarkGreen2 = Color(0xFF06690E)
 
-val Gray = Color(0xFF5C5F68)
+val DarkGray = Color(0xFF5C5F68)
+val Gray = Color(0xFFB3B7C0)
 val LightCinza = Color(0xFFEFF1F5)
 val GreenComp = Color(0xFF2D321D)

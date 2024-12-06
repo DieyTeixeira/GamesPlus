@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
-import com.dieyteixeira.gamesplus.ui.theme.Gray
+import com.dieyteixeira.gamesplus.ui.theme.DarkGray
 import com.dieyteixeira.gamesplus.ui.theme.Green
 import com.dieyteixeira.gamesplus.ui.theme.Lime
 import com.dieyteixeira.gamesplus.ui.theme.Purple
@@ -174,12 +174,12 @@ fun GridSizeSelector(
         GridSize(4, 4), // 16
         GridSize(5, 4), // 20
         GridSize(6, 4), // 24
-        GridSize(5, 5), // 25
         GridSize(6, 5), // 30
         GridSize(6, 6), // 36
         GridSize(7, 6), // 42
         GridSize(8, 6), // 48
-        GridSize(9, 6)  // 54
+        GridSize(9, 6), // 54
+        GridSize(10, 6) // 60
     )
 
     Text(
@@ -202,7 +202,7 @@ fun GridSizeSelector(
                     modifier = Modifier
                         .width(130.dp)
                         .height(30.dp)
-                        .background(if (size == selectedSize) Gray else Color.LightGray, shape = RoundedCornerShape(10.dp))
+                        .background(if (size == selectedSize) DarkGray else Color.LightGray, shape = RoundedCornerShape(10.dp))
                         .let {
                             if (isSelectable) it.clickable { onSizeSelected(size) } else it
                         },
@@ -226,7 +226,7 @@ fun GridSizeSelector(
                     modifier = Modifier
                         .width(130.dp)
                         .height(30.dp)
-                        .background(if (size == selectedSize) Gray else Color.LightGray, shape = RoundedCornerShape(10.dp))
+                        .background(if (size == selectedSize) DarkGray else Color.LightGray, shape = RoundedCornerShape(10.dp))
                         .let {
                             if (isSelectable) it.clickable { onSizeSelected(size) } else it
                         },
@@ -275,7 +275,7 @@ fun GameModeSelector(
                     modifier = Modifier
                         .width(130.dp)
                         .height(30.dp)
-                        .background(if (mode == selectedMode) Gray else Color.LightGray, shape = RoundedCornerShape(10.dp))
+                        .background(if (mode == selectedMode) DarkGray else Color.LightGray, shape = RoundedCornerShape(10.dp))
                         .clickable{onModeSelected(mode)},
                     contentAlignment = Alignment.Center
                 ) {
@@ -298,7 +298,7 @@ fun GameModeSelector(
                     modifier = Modifier
                         .width(130.dp)
                         .height(30.dp)
-                        .background(if (mode == selectedMode) Gray else Color.LightGray, shape = RoundedCornerShape(10.dp))
+                        .background(if (mode == selectedMode) DarkGray else Color.LightGray, shape = RoundedCornerShape(10.dp))
                         .clickable{onModeSelected(mode)},
                     contentAlignment = Alignment.Center
                 ) {

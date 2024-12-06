@@ -205,7 +205,7 @@ fun NavigationDrawer(
             topPadding = 100.dp
         ) { onItemClicked(it) }
         NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_memory),
+            icon = painterResource(id = R.drawable.ic_game_memory2),
             box = true,
             text = "Memória",
             index = 1
@@ -217,7 +217,7 @@ fun NavigationDrawer(
             index = 2
         ) { onItemClicked(it) }
         NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_velha),
+            icon = painterResource(id = R.drawable.ic_game_velha2),
             box = true,
             text = "Velha",
             index = 3
@@ -235,7 +235,7 @@ fun NavigationDrawer(
             index = 5
         ) { onItemClicked(it) }
         NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_velha),
+            icon = painterResource(id = R.drawable.ic_game_sudoku),
             box = true,
             text = "Sudoku",
             index = 6
