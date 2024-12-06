@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ fun GameSudoku(
     val boardState = remember { mutableStateOf(Array(9) { Array(9) { mutableSetOf<Int>() } }) }
     val selectedNumber = remember { mutableStateOf<Int?>(null) }
     val highlightedCells = remember { mutableStateOf(setOf<Pair<Int, Int>>()) }
+    val difficulty = remember { mutableStateOf("Fácil") } // "Fácil", "Médio", "Difícil"
+    val level = remember { mutableStateOf("Nível 1") }
 
     Column(
         modifier = Modifier
@@ -49,8 +52,17 @@ fun GameSudoku(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        LevelSelector(level = level)
+
+        DifficultySelector(difficulty = difficulty)
+
+        LaunchedEffect(level.value) {
+            boardState.value = generateSudokuBoard(level.value)
+        }
+
         SudokuBoard(
             board = boardState.value,
+            difficulty = difficulty.value,
             highlightedCells = highlightedCells.value,
             onCellClick = { row, col ->
                 selectedNumber.value?.let { number ->
@@ -68,6 +80,7 @@ fun GameSudoku(
         NumberSelector(
             selectedNumber = selectedNumber,
             boardState = boardState.value,
+            difficulty = difficulty.value,
             onNumberClick = { number ->
                 highlightedCells.value = highlightOccurrences(boardState.value, number)
             }
@@ -78,19 +91,22 @@ fun GameSudoku(
 @Composable
 fun SudokuBoard(
     board: Array<Array<MutableSet<Int>>>,
+    difficulty: String,
     highlightedCells: Set<Pair<Int, Int>>,
     onCellClick: (Int, Int) -> Unit
 ) {
 
-    val duplicates = findDuplicates(board)
-    val correctRows = (0..8).filter { isRowValid(board, it) }
-    val correctCols = (0..8).filter { isColumnValid(board, it) }
+    val duplicates = if (difficulty == "Fácil") findDuplicates(board) else emptySet()
+    val correctRows = if (difficulty == "Fácil") (0..8).filter { isRowValid(board, it) } else emptyList()
+    val correctCols = if (difficulty == "Fácil") (0..8).filter { isColumnValid(board, it) } else emptyList()
     val correctBoxes = mutableSetOf<Pair<Int, Int>>()
 
-    for (boxRow in 0 until 3) {
-        for (boxCol in 0 until 3) {
-            if (isBoxValid(board, boxRow, boxCol)) {
-                correctBoxes.add(boxRow to boxCol)
+    if (difficulty == "Fácil") {
+        for (boxRow in 0 until 3) {
+            for (boxCol in 0 until 3) {
+                if (isBoxValid(board, boxRow, boxCol)) {
+                    correctBoxes.add(boxRow to boxCol)
+                }
             }
         }
     }
@@ -119,8 +135,8 @@ fun SudokuBoard(
                         row = row,
                         col = col,
                         isHighlighted = highlightedCells.contains(row to col),
-                        isDuplicate = duplicates.contains(row to col),
-                        isCorrect = isRowCorrect || isColCorrect || isBoxCorrect,
+                        isDuplicate = difficulty == "Fácil" && duplicates.contains(row to col),
+                        isCorrect = difficulty == "Fácil" && (correctRows.contains(row) || correctCols.contains(col) || correctBoxes.contains(row / 3 to col / 3)),
                         onClick = { onCellClick(row, col) }
                     )
 
@@ -278,9 +294,10 @@ fun SudokuCell(
 fun NumberSelector(
     selectedNumber: MutableState<Int?>,
     boardState: Array<Array<MutableSet<Int>>>,
+    difficulty: String,
     onNumberClick: (Int) -> Unit
 ) {
-    val numberCounts = countOccurrences(boardState) // Contagem de números
+    val numberCounts = if (difficulty != "Difícil") countOccurrences(boardState) else emptyMap()
 
     Column(
         modifier = Modifier
@@ -358,6 +375,126 @@ fun NumberBox(
             )
         }
     }
+}
+
+@Composable
+fun LevelSelector(
+    level: MutableState<String>
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        listOf("Nível 1", "Nível 2", "Nível 3", "Nível 4", "Nível 5").forEach { lvl ->
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (level.value == lvl) Blue else Color.LightGray)
+                    .clickable { level.value = lvl }
+                    .padding(10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = lvl,
+                    fontSize = 16.sp,
+                    color = if (level.value == lvl) Color.White else Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DifficultySelector(
+    difficulty: MutableState<String>
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        listOf("Fácil", "Médio", "Difícil").forEach { level ->
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (difficulty.value == level) Blue else Color.LightGray)
+                    .clickable { difficulty.value = level }
+                    .padding(10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = level,
+                    fontSize = 16.sp,
+                    color = if (difficulty.value == level) Color.White else Color.Black
+                )
+            }
+        }
+    }
+}
+
+fun generateSudokuBoard(level: String): Array<Array<MutableSet<Int>>> {
+    val board = Array(9) { Array(9) { mutableSetOf<Int>() } }
+    val random = java.util.Random()
+
+    val fillPercentage = when (level) {
+        "Nível 1" -> 0.80 // 35 células em branco
+        "Nível 2" -> 0.50 // 44 células em branco
+        "Nível 3" -> 0.35 // 53 células em branco
+        "Nível 4" -> 0.25 // 61 células em branco
+        "Nível 5" -> 0.18 // 67 células em branco
+        else -> 0.0
+    }
+
+    val totalCells = 81
+    val cellsToFill = (totalCells * fillPercentage).toInt()
+
+    fun isValidPlacement(board: Array<Array<MutableSet<Int>>>, row: Int, col: Int, number: Int): Boolean {
+        if (board[row].any { it.contains(number) }) return false
+        if (board.any { it[col].contains(number) }) return false
+        val startRow = (row / 3) * 3
+        val startCol = (col / 3) * 3
+        for (r in startRow until startRow + 3) {
+            for (c in startCol until startCol + 3) {
+                if (board[r][c].contains(number)) return false
+            }
+        }
+
+        return true
+    }
+
+    var attemptsOverall = 0
+    repeat(cellsToFill) {
+        var row: Int
+        var col: Int
+        var number: Int
+        var isValid: Boolean
+        var attempts = 0
+
+        while (attempts < 10) {
+            row = random.nextInt(9)
+            col = random.nextInt(9)
+
+            if (board[row][col].isNotEmpty()) continue
+            number = random.nextInt(9) + 1
+            isValid = isValidPlacement(board, row, col, number)
+            if (isValid) {
+                board[row][col].add(number)
+                break
+            }
+
+            attempts++
+        }
+
+        attemptsOverall++
+        if (attemptsOverall > 50) {
+            return board
+        }
+    }
+
+    return board
 }
 
 fun highlightOccurrences(board: Array<Array<MutableSet<Int>>>, number: Int): Set<Pair<Int, Int>> {
