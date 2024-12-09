@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 fun InformationSudoku(
     color: Color,
     playerName: String,
-    nivel: String,
-    dificuldade: String
+    nivDific: String,
+    nivAjuda: String
 ) {
 
     Row(
@@ -45,7 +45,7 @@ fun InformationSudoku(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Nível",
+                text = "Dificuldade",
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 12.sp),
                 color = Color.White,
                 modifier = Modifier
@@ -58,7 +58,7 @@ fun InformationSudoku(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = nivel,
+                    text = nivDific,
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 25.sp),
                     color = Color.White
                 )
@@ -77,7 +77,7 @@ fun InformationSudoku(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Dificuldade",
+                text = "Ajuda",
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 12.sp),
                 color = Color.White,
                 modifier = Modifier
@@ -85,7 +85,7 @@ fun InformationSudoku(
                     .padding(3.dp)
             )
             Text(
-                text = dificuldade,
+                text = nivAjuda,
                 style = MaterialTheme.typography.displaySmall.copy(fontSize = 25.sp),
                 color = Color.White,
                 modifier = Modifier.height(40.dp)

@@ -1,18 +1,12 @@
 package com.dieyteixeira.gamesplus.games.game_sudoku
 
 import androidx.compose.ui.graphics.Color
-import com.dieyteixeira.gamesplus.games.game_memory.GameMode
-import com.dieyteixeira.gamesplus.games.game_memory.GridSize
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 data class SudokuState(
     val playerName: String = "",
     val playerColor: Color = Color.LightGray,
-    val selectedNivel: String = "Nível 1",
-    val selectedAuxilio: String = "Fácil",
+    val selectedNivel: String,
+    val selectedAuxilio: String,
     val isGameOver: Boolean = false
 )
 
@@ -73,11 +67,11 @@ fun generateCompleteSudokuBoard(level: String): Pair<Array<Array<MutableSet<Int>
 
         // Define a porcentagem de preenchimento para cada nível
         val fillPercentage = when (level) {
-            "Nível 1" -> 0.63 // 30 células em branco
-            "Nível 2" -> 0.51 // 40 células em branco
-            "Nível 3" -> 0.39 // 50 células em branco
-            "Nível 4" -> 0.27 // 60 células em branco
-            "Nível 5" -> 0.14 // 70 células em branco
+            "1" -> 0.63 // 30 células em branco
+            "2" -> 0.51 // 40 células em branco
+            "3" -> 0.39 // 50 células em branco
+            "4" -> 0.27 // 60 células em branco
+            "5" -> 0.14 // 70 células em branco
             else -> 0.0
         }
 
@@ -119,6 +113,14 @@ fun generateCompleteSudokuBoard(level: String): Pair<Array<Array<MutableSet<Int>
 
     // Retorna o tabuleiro e o estado bloqueado
     return Pair(board, boardLocked)
+}
+
+fun updateBoard(board: Array<Array<MutableSet<Int>>>, row: Int, col: Int, number: Int) {
+    if (board[row][col].contains(number)) {
+        board[row][col].remove(number)
+    } else {
+        board[row][col].add(number)
+    }
 }
 
 fun highlightOccurrences(board: Array<Array<MutableSet<Int>>>, number: Int): Set<Pair<Int, Int>> {
@@ -203,6 +205,7 @@ fun isRowValid(board: Array<Array<MutableSet<Int>>>, row: Int): Boolean {
     val seen = mutableSetOf<Int>()
     for (col in board[row].indices) {
         val cell = board[row][col]
+        if (cell.size > 1) return false
         for (number in cell) {
             if (number in seen) return false
             seen.add(number)
@@ -215,6 +218,7 @@ fun isColumnValid(board: Array<Array<MutableSet<Int>>>, col: Int): Boolean {
     val seen = mutableSetOf<Int>()
     for (row in board.indices) {
         val cell = board[row][col]
+        if (cell.size > 1) return false
         for (number in cell) {
             if (number in seen) return false
             seen.add(number)
@@ -230,6 +234,7 @@ fun isBoxValid(board: Array<Array<MutableSet<Int>>>, boxRow: Int, boxCol: Int): 
             val currentRow = boxRow * 3 + row
             val currentCol = boxCol * 3 + col
             val cell = board[currentRow][currentCol]
+            if (cell.size > 1) return false
             for (number in cell) {
                 if (number in seen) return false
                 seen.add(number)
@@ -237,4 +242,41 @@ fun isBoxValid(board: Array<Array<MutableSet<Int>>>, boxRow: Int, boxCol: Int): 
         }
     }
     return seen.size == 9 && (1..9).all { it in seen }
+}
+
+fun isSudokuCompleteAndCorrect(board: Array<Array<MutableSet<Int>>>): Boolean {
+    // Verifica linhas
+    for (row in board) {
+        if (!isSetComplete(row)) return false
+    }
+
+    // Verifica colunas
+    for (col in 0 until 9) {
+        val column = Array(9) { row -> board[row][col] }
+        if (!isSetComplete(column)) return false
+    }
+
+    // Verifica sub-blocos 3x3
+    for (boxRow in 0 until 3) {
+        for (boxCol in 0 until 3) {
+            val box = mutableListOf<MutableSet<Int>>()
+            for (i in 0 until 3) {
+                for (j in 0 until 3) {
+                    box.add(board[boxRow * 3 + i][boxCol * 3 + j])
+                }
+            }
+            if (!isSetComplete(box.toTypedArray())) return false
+        }
+    }
+
+    return true
+}
+
+fun isSetComplete(cells: Array<MutableSet<Int>>): Boolean {
+    val numbers = mutableSetOf<Int>()
+    for (cell in cells) {
+        if (cell.size != 1) return false // Cada célula deve conter exatamente um número
+        numbers.addAll(cell)
+    }
+    return numbers == (1..9).toSet() // Deve conter todos os números de 1 a 9
 }

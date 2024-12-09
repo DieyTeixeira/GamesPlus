@@ -1,6 +1,8 @@
 package com.dieyteixeira.gamesplus.games.game_sudoku
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -22,9 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dieyteixeira.gamesplus.ui.theme.DarkYellow
 import com.dieyteixeira.gamesplus.ui.theme.Gray
 import com.dieyteixeira.gamesplus.ui.theme.Green
 import com.dieyteixeira.gamesplus.ui.theme.Red
@@ -35,6 +40,7 @@ fun SudokuCell(
     value: Set<Int>,
     row: Int,
     col: Int,
+    difficulty: String,
     isHighlighted: Boolean,
     isDuplicate: Boolean,
     isCorrect: Boolean,
@@ -56,14 +62,24 @@ fun SudokuCell(
                 Box(
                     modifier = Modifier
                         .size(if (value.size == 1) 33.dp else 36.dp)
+                        .border(
+                            width = 1.5.dp,
+                            color = when {
+                                isDuplicate && !isLocked -> Red
+                                isCorrect && !isLocked -> Green
+                                else -> Color.Transparent
+                            },
+                            shape = when {
+                                value.size == 1 -> RoundedCornerShape(100)
+                                else -> RoundedCornerShape(20)
+                            }
+                        )
                         .background(
                             color = when {
                                 value.isEmpty() -> Color.Transparent
-                                isHighlighted && isCorrect && !isLocked -> Green.copy(alpha = 0.8f)
-                                isHighlighted && isLocked -> Gray
+                                isHighlighted && isLocked && difficulty == "Máximo" -> Gray
                                 isLocked -> Gray.copy(alpha = 0.2f)
-                                isCorrect -> Green.copy(alpha = 0.4f)
-                                isHighlighted -> colorPlayer.copy(alpha = 0.8f)
+                                isHighlighted && difficulty == "Máximo" -> colorPlayer.copy(alpha = 0.8f)
                                 else -> colorPlayer.copy(alpha = 0.2f)
                             },
                             shape = when {
@@ -95,18 +111,20 @@ fun SudokuCell(
                             ) {
                                 Text(
                                     text = value.first().toString(),
-                                    fontSize = 16.sp,
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        fontSize = 16.sp
+                                    ),
                                     color = when {
-                                        isDuplicate && !isLocked -> Red
-                                        isHighlighted -> Color.White
+                                        isHighlighted && difficulty == "Máximo" -> Color.White
                                         else -> Color.Black
-
                                     }
                                 )
                             }
                         } else {
                             Column(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 3.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 for (i in 0..2) {
@@ -126,12 +144,12 @@ fun SudokuCell(
                                                 ) {
                                                     Text(
                                                         text = number.toString(),
-                                                        fontSize = 8.sp,
+                                                        style = MaterialTheme.typography.headlineMedium.copy(
+                                                            fontSize = 11.sp
+                                                        ),
                                                         color = when {
-                                                            isDuplicate && !isLocked -> Red
-                                                            isHighlighted -> Color.White
+                                                            isHighlighted && difficulty == "Máximo" -> Color.White
                                                             else -> Color.Black
-
                                                         }
                                                     )
                                                 }
@@ -145,7 +163,7 @@ fun SudokuCell(
                 }
             }
 
-            // Linha vertical mais grossa entre blocos
+            // Linha vertical menor entre as células
             if (col >= 0 && col != 2 && col != 5 && col != 8) {
                 Spacer(
                     modifier = Modifier
@@ -156,7 +174,7 @@ fun SudokuCell(
             }
         }
 
-        // Linha horizontal mais grossa entre blocos
+        // Linha horizontal menor entre as células
         if (row >= 0 && row != 2 && row != 5 && row != 8) {
             Spacer(
                 modifier = Modifier
@@ -176,7 +194,6 @@ fun NumberSelector(
     difficulty: String,
     onNumberClick: (Int) -> Unit
 ) {
-    val numberCounts = if (difficulty != "Difícil") countOccurrences(boardState) else emptyMap()
 
     Column(
         modifier = Modifier
@@ -196,7 +213,8 @@ fun NumberSelector(
                     colorPlayer = colorPlayer,
                     number = number,
                     selectedNumber = selectedNumber,
-                    numberCounts = numberCounts,
+                    numberCounts = countOccurrences(boardState),
+                    difficulty = difficulty,
                     onNumberClick = onNumberClick
                 )
                 if (number < 5) {
@@ -216,7 +234,8 @@ fun NumberSelector(
                     colorPlayer = colorPlayer,
                     number = number,
                     selectedNumber = selectedNumber,
-                    numberCounts = numberCounts,
+                    numberCounts = countOccurrences(boardState),
+                    difficulty = difficulty,
                     onNumberClick = onNumberClick
                 )
                 if (number < 9) {
@@ -233,8 +252,12 @@ fun NumberBox(
     number: Int,
     selectedNumber: MutableState<Int?>,
     numberCounts: Map<Int, Int>,
+    difficulty: String,
     onNumberClick: (Int) -> Unit
 ) {
+
+    val completed = if (numberCounts[number] == 9) true else false
+
     Box(
         modifier = Modifier
             .width(60.dp)
@@ -253,18 +276,42 @@ fun NumberBox(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(if (difficulty != "Mínimo") 5.dp else 8.dp))
             Text(
                 text = number.toString(),
-                fontSize = 28.sp,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 32.sp
+                ),
                 color = if (selectedNumber.value == number) Color.White else Color.Black
             )
             Spacer(modifier = Modifier.height(5.dp))
-            Text(
-                text = numberCounts[number]?.toString() ?: "0",
-                fontSize = 14.sp,
-                color = (if (selectedNumber.value == number) Color.White else Color.Black).copy(alpha = 0.6f)
-            )
+            if (difficulty != "Mínimo") {
+                if (numberCounts[number] == 9) {
+                    Box(
+                        modifier = Modifier
+                            .size(13.dp)
+                            .background(Green, shape = RoundedCornerShape(20.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Check",
+                            colorFilter = ColorFilter.tint(Color.White),
+                            modifier = Modifier.size(11.dp)
+                        )
+                    }
+                } else {
+                    Text(
+                        text = numberCounts[number]?.toString() ?: "0",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 14.sp
+                        ),
+                        color = (if (selectedNumber.value == number) Color.White else Color.Black).copy(
+                            alpha = 0.6f
+                        )
+                    )
+                }
+            }
         }
     }
 }

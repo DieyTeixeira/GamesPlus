@@ -118,7 +118,7 @@ fun SettingsSudoku(
                 .background(color, shape = RoundedCornerShape(100))
                 .clickable {
                     if (isValid) {
-                        onStartGame(SudokuState(playerName, playerColor))
+                        onStartGame(SudokuState(playerName, playerColor, level, difficulty))
                     } else {
                         showError = true
                     }
@@ -264,15 +264,15 @@ fun LevelSelectorSudoku(
     onLevelSelected: (String) -> Unit
 ) {
     val levels = listOf(
-        "Nível 1",
-        "Nível 2",
-        "Nível 3",
-        "Nível 4",
-        "Nível 5"
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
     )
 
     Text(
-        "Nível do jogo:",
+        "Dificuldade do jogo:",
         style = MaterialTheme.typography.displaySmall.copy(fontSize = 18.sp)
     )
 
@@ -280,11 +280,14 @@ fun LevelSelectorSudoku(
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(modifier = Modifier.width(8.dp))
         levels.forEach { level ->
             Box(
                 modifier = Modifier
+                    .size(40.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(if (level == selectedLevel) DarkGray else Color.LightGray, shape = RoundedCornerShape(10.dp))
                     .clickable { onLevelSelected(level) }
@@ -297,6 +300,7 @@ fun LevelSelectorSudoku(
                     color = if (level == selectedLevel) Color.White else Color.Black
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }
@@ -307,9 +311,8 @@ fun DifficultySelector(
     onDifficultySelected: (String) -> Unit
 ) {
     val difics = listOf(
-        "Fácil",
-        "Médio",
-        "Difícil"
+        "Mínimo",
+        "Máximo"
     )
 
     Text(
@@ -321,18 +324,21 @@ fun DifficultySelector(
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(modifier = Modifier.width(8.dp))
         difics.forEach { dific ->
             Box(
                 modifier = Modifier
+                    .height(40.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(
                         if (dific == selectedDifficulty) DarkGray else Color.LightGray,
                         shape = RoundedCornerShape(10.dp)
                     )
                     .clickable { onDifficultySelected(dific) }
-                    .padding(10.dp),
+                    .padding(horizontal = 20.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -341,6 +347,7 @@ fun DifficultySelector(
                     color = if (dific == selectedDifficulty) Color.White else Color.Black
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }

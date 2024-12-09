@@ -12,22 +12,32 @@ val Typography = Typography(
 
     // textos gerais jogos, fonte digital
     displayMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.font_digital)),
+        fontFamily = FontFamily(Font(R.font.font_liquid_crystal_ri)),
         letterSpacing = 1.2.sp
     ),
 
     // cabeçalhos memória
     headlineLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.font_memory1))
+        fontFamily = FontFamily(Font(R.font.font_baron_neue_b))
     ),
     // textos gerais memória
     displaySmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.font_memory2)),
+        fontFamily = FontFamily(Font(R.font.font_alwyn_b)),
         letterSpacing = 1.2.sp
     ),
+
     // números dos cards
     titleLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.font_memory3))
+        fontFamily = FontFamily(Font(R.font.font_klavika_bi))
+    ),
+
+    // números sudoku
+    titleMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.font_klavika_ri))
+    ),
+    // grid sudoku
+    headlineMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.font_klavika_r))
     ),
 
     labelSmall = TextStyle(

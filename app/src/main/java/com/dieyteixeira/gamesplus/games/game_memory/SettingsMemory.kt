@@ -170,7 +170,6 @@ fun GridSizeSelector(
     onSizeSelected: (GridSize) -> Unit
 ) {
     val sizes = listOf(
-        GridSize(4, 3), // 12
         GridSize(4, 4), // 16
         GridSize(5, 4), // 20
         GridSize(6, 4), // 24
@@ -179,7 +178,6 @@ fun GridSizeSelector(
         GridSize(7, 6), // 42
         GridSize(8, 6), // 48
         GridSize(9, 6), // 54
-        GridSize(10, 6) // 60
     )
 
     Text(
@@ -196,7 +194,7 @@ fun GridSizeSelector(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            sizes.take(5).forEach { size ->
+            sizes.take(4).forEach { size ->
                 val grid = "Grid ${size.rows}x${size.columns}"
                 Box(
                     modifier = Modifier
@@ -220,7 +218,7 @@ fun GridSizeSelector(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            sizes.drop(5).forEach { size ->
+            sizes.drop(4).forEach { size ->
                 val grid = "Grid ${size.rows}x${size.columns}"
                 Box(
                     modifier = Modifier

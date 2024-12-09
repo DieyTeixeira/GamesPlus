@@ -53,7 +53,7 @@ fun GameMemory(
 ) {
     val color = DarkBlue
 
-    var gridSize by remember { mutableStateOf(GridSize(4, 3)) }
+    var gridSize by remember { mutableStateOf(GridSize(4, 4)) }
     var gameMode by remember { mutableStateOf(GameMode.OnePlayer) }
     var player1Name by remember { mutableStateOf("") }
     var player2Name by remember { mutableStateOf("") }
@@ -175,29 +175,27 @@ fun MemoryGame(
                 Log.d("GameState", "Nível atual: $gridSizeAtual")
 
                 val nextGridSize = when (gridSizeAtual) {
-                    GridSize(4, 3) -> GridSize(4, 4) // 1 -> 2
-                    GridSize(4, 4) -> GridSize(5, 4) // 2 -> 3
-                    GridSize(5, 4) -> GridSize(6, 4) // 3 -> 4
-                    GridSize(6, 4) -> GridSize(5, 5) // 4 -> 5
-                    GridSize(5, 5) -> GridSize(6, 5) // 5 -> 6
-                    GridSize(6, 5) -> GridSize(6, 6) // 6 -> 7
-                    GridSize(6, 6) -> GridSize(7, 6) // 7 -> 8
-                    GridSize(7, 6) -> GridSize(8, 6) // 8 -> 9
-                    GridSize(8, 6) -> GridSize(9, 6) // 9 -> 10
+                    GridSize(4, 4) -> GridSize(5, 4) // 1 -> 2
+                    GridSize(5, 4) -> GridSize(6, 4) // 2 -> 3
+                    GridSize(6, 4) -> GridSize(5, 5) // 3 -> 4
+                    GridSize(5, 5) -> GridSize(6, 5) // 4 -> 5
+                    GridSize(6, 5) -> GridSize(6, 6) // 5 -> 6
+                    GridSize(6, 6) -> GridSize(7, 6) // 6 -> 7
+                    GridSize(7, 6) -> GridSize(8, 6) // 7 -> 8
+                    GridSize(8, 6) -> GridSize(9, 6) // 8 -> 9
                     else -> gridSizeAtual
                 }
 
                 val level = when (nextGridSize) {
-                    GridSize(4, 3) -> 1
-                    GridSize(4, 4) -> 2
-                    GridSize(5, 4) -> 3
-                    GridSize(6, 4) -> 4
-                    GridSize(5, 5) -> 5
-                    GridSize(6, 5) -> 6
-                    GridSize(6, 6) -> 7
-                    GridSize(7, 6) -> 8
-                    GridSize(8, 6) -> 9
-                    else -> 10
+                    GridSize(4, 4) -> 1
+                    GridSize(5, 4) -> 2
+                    GridSize(6, 4) -> 3
+                    GridSize(5, 5) -> 4
+                    GridSize(6, 5) -> 5
+                    GridSize(6, 6) -> 6
+                    GridSize(7, 6) -> 7
+                    GridSize(8, 6) -> 8
+                    else -> 9
                 }
 
                 Log.d("GameState", "Atualizando para o próximo gridSize: $nextGridSize")
@@ -833,7 +831,7 @@ fun MemoryGame(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 GridBoard(gameState, cardSize, player1Color, player2Color) { index ->
                     if (!gameState.revealed[index] && !gameState.matched[index] && !isWaitingForFlip) {
                         val newRevealed = gameState.revealed.toMutableList()
