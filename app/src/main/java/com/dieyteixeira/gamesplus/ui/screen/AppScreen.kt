@@ -55,6 +55,7 @@ import com.dieyteixeira.gamesplus.games.game_tetris.GameTetris
 import com.dieyteixeira.gamesplus.games.game_velha.GameVelha
 import com.dieyteixeira.gamesplus.ui.theme.Blue
 import com.dieyteixeira.gamesplus.ui.theme.DarkBlue
+import com.dieyteixeira.gamesplus.ui.theme.DarkGray
 
 @Composable
 fun AppScreen() {
@@ -108,7 +109,6 @@ fun BodyContent(
             .offset(x = offSetAnim)
             .clip(RoundedCornerShape(clipAnim))
             .background(Color.White)
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -309,12 +309,15 @@ fun MenuGames(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(color = Color(0xFFCCCCCC)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Selecione seu jogo!"
+        Image(
+            painter = painterResource(id = R.drawable.logo_games_plus),
+            contentDescription = "Logo",
+            modifier = Modifier.size(350.dp)
         )
     }
 }
