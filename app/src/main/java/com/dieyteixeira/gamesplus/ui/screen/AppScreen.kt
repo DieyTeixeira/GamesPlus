@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -46,9 +49,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dieyteixeira.gamesplus.R
+import com.dieyteixeira.gamesplus.games.game_crossword.GameCrossword
 import com.dieyteixeira.gamesplus.games.game_memory.GameMemory
 import com.dieyteixeira.gamesplus.games.game_memory.clickable
 import com.dieyteixeira.gamesplus.games.game_pacman.GamePacman
+import com.dieyteixeira.gamesplus.games.game_puzzle.GamePuzzle
 import com.dieyteixeira.gamesplus.games.game_snake.GameSnake
 import com.dieyteixeira.gamesplus.games.game_sudoku.GameSudoku
 import com.dieyteixeira.gamesplus.games.game_tetris.GameTetris
@@ -72,6 +77,7 @@ fun AppScreen() {
         Box(modifier = Modifier.fillMaxSize()) {
             NavigationDrawer(
                 color = colorList,
+                navigateClick = navigateClick,
                 onItemClicked = { index ->
                     currentIndex = index
                     navigateClick = false
@@ -109,6 +115,7 @@ fun BodyContent(
             .offset(x = offSetAnim)
             .clip(RoundedCornerShape(clipAnim))
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -174,8 +181,10 @@ val screensGames = listOf<@Composable (Boolean) -> Unit>(
     { navigateClick -> GameVelha(navigateClick) },
     { navigateClick -> GameTetris(navigateClick) },
     { navigateClick -> GamePacman(navigateClick) },
-    { navigateClick -> GameSudoku(navigateClick) }
+    { navigateClick -> GameSudoku(navigateClick) },
+    { navigateClick -> GamePuzzle(navigateClick) }
 )
+
 
 val textsGames = listOf(
     "Games Plus",
@@ -184,62 +193,134 @@ val textsGames = listOf(
     "Velha",
     "Tetris",
     "Pacman",
-    "Sudoku"
+    "Sudoku",
+    "Puzzle"
 )
 
 @Composable
 fun NavigationDrawer(
     color: Color,
+    navigateClick: Boolean,
     onItemClicked: (Int) -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_memory2),
+            box = true,
+            text = "Memória",
+            index = 1,
+            topPadding = 100.dp
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_snake),
+            box = true,
+            text = "Snake",
+            index = 2
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_velha2),
+            box = true,
+            text = "Velha",
+            index = 3
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_tetris),
+            box = true,
+            text = "Tetris",
+            index = 4
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_pacman),
+            box = true,
+            text = "Pacman",
+            index = 5
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_game_sudoku),
+            box = true,
+            text = "Sudoku",
+            index = 6
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Puzzle",
+            index = 7
+        ) { if (navigateClick) onItemClicked(it) }
+        /*NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Crossword",
+            index = 8
+        ) { if (navigateClick) onItemClicked(it) }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 9
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 10
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 11
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 12
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 13
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 14
+        ) {  }
+        NavigationItem(
+            icon = painterResource(id = R.drawable.ic_block),
+            box = true,
+            text = "Teste",
+            index = 15
+        ) {  }*/
+    }
+
+    Column(
+        modifier = Modifier
             .background(color)
+            .fillMaxWidth()
     ) {
         NavigationItem(
             icon = null,
             box = false,
             text = "lista de jogos",
             index = 0,
-            topPadding = 100.dp
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_memory2),
-            box = true,
-            text = "Memória",
-            index = 1
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_snake),
-            box = true,
-            text = "Snake",
-            index = 2
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_velha2),
-            box = true,
-            text = "Velha",
-            index = 3
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_tetris),
-            box = true,
-            text = "Tetris",
-            index = 4
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_pacman),
-            box = true,
-            text = "Pacman",
-            index = 5
-        ) { onItemClicked(it) }
-        NavigationItem(
-            icon = painterResource(id = R.drawable.ic_game_sudoku),
-            box = true,
-            text = "Sudoku",
-            index = 6
-        ) { onItemClicked(it) }
+            topPadding = 40.dp
+        ) { if (navigateClick) onItemClicked(it) }
+        Spacer(modifier = Modifier.height(5.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color.White)
+        )
     }
 }
 
@@ -253,7 +334,7 @@ fun NavigationItem(
     bottomPadding: Dp = 8.dp,
     onItemClicked: (Int) -> Unit
 ) {
-    val spacer = if (box) 20.dp else 50.dp
+    val spacer = if (box) 20.dp else 40.dp
 
     Column(
         modifier = Modifier
@@ -307,18 +388,44 @@ fun NavigationItem(
 fun MenuGames(
     navigateClick: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFFCCCCCC)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_games_plus),
-            contentDescription = "Logo",
-            modifier = Modifier.size(350.dp)
-        )
+    Spacer(modifier = Modifier.height(150.dp))
+    Box(){
+        Box(
+            modifier = Modifier
+                .size(327.dp)
+                .offset(
+                    y = 2.dp,
+                    x = 1.dp
+                )
+                .border(
+                    width = 3.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(100)
+                )
+        ) {}
+        Column(
+            modifier = Modifier
+                .size(325.dp)
+                .background(
+                    color = Color(0xFFCCCCCC),
+                    shape = RoundedCornerShape(100)
+                )
+                .border(
+                    width = 6.dp,
+                    color = Color.White,
+                    shape = RoundedCornerShape(100)
+                ),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_games_plus),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(275.dp)
+                    .clip(RoundedCornerShape(40))
+            )
+        }
     }
 }
 
